@@ -5,6 +5,8 @@ itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==1.0
 packaging==16.8
+PyMySQL==0.7.10
 pyparsing==2.2.0
+python-dotenv==0.6.3
 six==1.10.0
 Werkzeug==0.11.15
