@@ -66,7 +66,7 @@ def login():
 
 
 sqlforprofileuser = text('SELECT username FROM users WHERE username = username')
-sqlforprofileplaylists = text('SELECT title,external_url FROM playlists WHERE user_id = theuser (SELECT user_id as theuser FROM users WHERE username = username)') #ADVANCED
+sqlforprofileplaylists = text('SELECT title,id FROM playlists WHERE user_id = theuser (SELECT user_id as theuser FROM users WHERE username = username)') #ADVANCED
 
 @app.route('/profile/<username>')
 @login_required
@@ -78,9 +78,13 @@ def profile(username):
     playlists = db.engine.execute(sqlforprofileplaylists)
     return render_template('profile.html', username=username, playlists=playlists)
 
-@app.route('/playlist')
-def playlist():
-    return render_template('playlist.html')
+
+sqlforplaylistsongs = text('SELECT * FROM songs JOIN playlist_entry ON songs.playlist_id = playlist_entry.playlist_id WHERE = playlist_entry.playlist_id = id') #ADVANCED
+@app.route('/playlist/<user_id>/<id>')
+@login_required
+def playlist(user_id,id):
+    songs = db.engine.execute(sqlforplaylistsongs)
+    return render_template('playlist.html', user_id = user_id, songs = songs, id=id)
 
 
 @login_manager.user_loader

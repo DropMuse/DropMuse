@@ -6,7 +6,7 @@
 
   {% for playlist in playlists %}
   <p>
-    <a href="{{ playlist.external_url }}">{{ playlist.title }}</a> <br>
+    <a href="drop.mu/playlist/{{ playlist.user_id }}/{{ playlist.id }}">{{ playlist.title }}</a> <br>
   </p>
   {% endfor %}
 

@@ -2,6 +2,13 @@
 {% block content %}
   <h2> Playlist: {{ playlist_entry.playlist_id }}</h2>
 
+ {% for song in songs %}
+  <p>
+     Title: {{song.title}}, Artist: {{song.artist}}, Album: {{song.album}} <a href="{{song.external_url}}"Click to listen><br>
+  </p>
+  {% endfor %}
 
-  
 {% endblock %}
+
+
+
