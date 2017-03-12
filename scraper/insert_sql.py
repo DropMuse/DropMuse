@@ -1,17 +1,20 @@
 import pymysql.cursors
 import os
+from aws_creds import *
 from analyze_lyrics import *
 
-connection = pymysql.connect(host='localhost',
-                             user='root',
-                             password='password',
-                             db='DropMuse',
+db_name = "main"
+table = "songs"
+connection = pymysql.connect(host=aws_endpoint,
+                             user=aws_username,
+                             password=aws_password,
+                             db=db_name,
                              cursorclass=pymysql.cursors.DictCursor)
 cursor = connection.cursor()
     # Create a new
 
 try:
-    cursor.execute("""DROP TABLE songs;""")
+    cursor.execute("""DROP TABLE {};""".format(table))
     connection.commit()
 except pymysql.err.InternalError:
     pass
