@@ -1,13 +1,16 @@
 aniso8601==1.2.0
 appdirs==1.4.0
 arrow==0.10.0
+blinker==1.4
 cffi==1.9.1
 click==6.7
 cryptography==1.7.1
 enum34==1.1.6
 Flask==0.12
 Flask-Ask==0.8.6
-Flask-Login==0.4.0
+Flask-Login==0.3.2
+Flask-Mail==0.9.1
+Flask-Principal==0.4.0
 Flask-Security==1.7.5
 Flask-WTF==0.14.2
 idna==2.2
@@ -16,6 +19,7 @@ itsdangerous==0.24
 Jinja2==2.9.4
 MarkupSafe==0.23
 packaging==16.8
+passlib==1.7.1
 pyasn1==0.1.9
 pycparser==2.17
 PyMySQL==0.7.10

@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_login import LoginManager, login_user
+from flask import Flask, render_template, redirect, url_for, flash
+from flask_login import LoginManager, login_user, current_user, logout_user
 from flask_security import login_required
-import sqlalchemy
 from sqlalchemy import create_engine, text
 from settings import (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_DBNAME,
                       DB_PREFIX, SECRET_KEY)
@@ -55,38 +54,55 @@ def login():
                                    form.username.data,
                                    form.password.data)
         if user:
+            # Login user with Flask-Login
             login_user(user)
             flash('You have been logged in.', 'success')
-            return redirect(url_for('profile'))
+            return redirect(url_for('profile', username=form.username.data))
         else:
             flash('Invalid password', 'warning')
             return redirect(url_for('login'))
     return render_template('login.html', form=form)
 
 
-
-sqlforprofileuser = text('SELECT username FROM users WHERE username = username')
-sqlforprofileplaylists = text('SELECT title,id FROM playlists WHERE user_id = theuser (SELECT user_id as theuser FROM users WHERE username = username)') #ADVANCED
+sqlforprofileuser = text('SELECT username FROM users WHERE username=:user')
+sqlforprofileplaylists = text('SELECT title,external_url '
+                              'FROM playlists '
+                              'WHERE user_id=(SELECT user_id FROM users WHERE username=:user)') #ADVANCED
 
 @app.route('/profile/<username>')
 @login_required
 def profile(username):
-    profile = db.engine.execute(sqlforprofileuser)
-    if username == None:
-        flash('User %s not found.' % username)
-        return redirect(url_for('index'))
-    playlists = db.engine.execute(sqlforprofileplaylists)
-    return render_template('profile.html', username=username, playlists=playlists)
+    with engine.connect() as con:
+        profile = con.execute(sqlforprofileuser, user=username)
+        if username == None:
+            flash('User %s not found.' % username)
+            return redirect(url_for('index'))
+        playlists = con.execute(sqlforprofileplaylists, user=username)
+        return render_template('profile.html',
+                               user=current_user,
+                               playlists=playlists)
 
 
-sqlforplaylistsongs = text('SELECT * FROM songs JOIN playlist_entry ON songs.playlist_id = playlist_entry.playlist_id WHERE = playlist_entry.playlist_id = id') #ADVANCED
+
+sqlforplaylistsongs = text('SELECT * FROM songs'
+                           'JOIN playlist_entry ON songs.playlist_id = playlist_entry.playlist_id'
+                           'WHERE playlist_entry.playlist_id = id') #ADVANCED
 @app.route('/playlist/<id>')
 @login_required
 def playlist(id):
-    songs = db.engine.execute(sqlforplaylistsongs)
-    return render_template('playlist.html', songs = songs, id=id)
+    with engine.connect() as con:
+        songs = con.execute(sqlforplaylistsongs)
+        return render_template('playlist.html', songs = songs, id=id)
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db_utils.get_user_by_id(engine, user_id)
+    user = db_utils.get_user_by_id(engine, user_id)
+    print user
+    return user
+def about():
+    return render_template('about.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
