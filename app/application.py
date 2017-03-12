@@ -29,7 +29,7 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegistrationForm(request.form)
+    form = RegistrationForm()
     if form.validate_on_submit():
         # Check to make sure username not taken
         if db_utils.user_exists(engine, form.username.data):
@@ -48,7 +48,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm(request.form)
+    form = LoginForm()
     if form.validate_on_submit():
         # Validate user login
         user = db_utils.user_login(engine,
