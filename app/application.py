@@ -80,11 +80,11 @@ def profile(username):
 
 
 sqlforplaylistsongs = text('SELECT * FROM songs JOIN playlist_entry ON songs.playlist_id = playlist_entry.playlist_id WHERE = playlist_entry.playlist_id = id') #ADVANCED
-@app.route('/playlist/<user_id>/<id>')
+@app.route('/playlist/<id>')
 @login_required
-def playlist(user_id,id):
+def playlist(id):
     songs = db.engine.execute(sqlforplaylistsongs)
-    return render_template('playlist.html', user_id = user_id, songs = songs, id=id)
+    return render_template('playlist.html', songs = songs, id=id)
 
 
 @login_manager.user_loader
