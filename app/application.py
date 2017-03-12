@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user
 import sqlalchemy
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from settings import (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_DBNAME,
                       DB_PREFIX, SECRET_KEY)
 from forms import RegistrationForm, LoginForm
@@ -63,9 +63,23 @@ def login():
     return render_template('login.html', form=form)
 
 
-@app.route('/profile')
-def profile():
-    return render_template('profile.html')
+
+sqlforprofileuser = text('SELECT username FROM users WHERE username = username')
+sqlforprofileplaylists = text('SELECT title,external_url FROM playlists WHERE user_id = theuser (SELECT user_id as theuser FROM users WHERE username = username)') #ADVANCED
+
+@app.route('/profile/<username>')
+@login_required
+def profile(username):
+    profile = db.engine.execute(sqlforprofileuser)
+    if username == None:
+        flash('User %s not found.' % username)
+        return redirect(url_for('index'))
+    playlists = db.engine.execute(sqlforprofileplaylists)
+    return render_template('profile.html', username=username, playlists=playlists)
+
+@app.route('/playlist')
+def playlist():
+    return render_template('playlist.html')
 
 
 @login_manager.user_loader
