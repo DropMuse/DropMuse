@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user
+from flask_security import login_required
 import sqlalchemy
 from sqlalchemy import create_engine, text
 from settings import (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_DBNAME,
