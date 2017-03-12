@@ -49,6 +49,16 @@ def login():
     return render_template('login.html', form=form)
 
 
-@app.route('/profile')
+@app.route('/profile/<username>')
+@login_required
+def profile(username):
+    #profile =
+    if username == None:
+        flash('User %s not found.' % username)
+        return redirect(url_for('index'))
+    #get all the playlists
+    return render_template('profile.html', username=username, playlists=playlists)
+
+@app.route('/playlist')
 def profile():
-    return render_template('profile.html')
+    return render_template('playlist.html')
