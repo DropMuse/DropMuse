@@ -30,3 +30,12 @@ CREATE TABLE IF NOT EXISTS playlist_entry(
     FOREIGN KEY (playlist_id) REFERENCES playlists(id),
     FOREIGN KEY (song_id) REFERENCES songs(id)
 );
+
+CREATE TABLE IF NOT EXISTS votes(
+    playlist_id BIGINT NOT NULL,
+    song_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    FOREIGN KEY (playlist_id) REFERENCES playlists(id),
+    FOREIGN KEY (song_id) REFERENCES songs(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
