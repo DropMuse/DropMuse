@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_login import LoginManager, login_user
 import sqlalchemy
 from sqlalchemy import create_engine
 from settings import (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_DBNAME,
@@ -8,6 +9,8 @@ import db_utils
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+login_manager = LoginManager()
+login_manager.init_app(app)
 conn_str = "{}{}:{}@{}:{}/{}".format(DB_PREFIX,
                                      DB_USER,
                                      DB_PASS,
@@ -47,9 +50,11 @@ def login():
     form = LoginForm(request.form)
     if form.validate_on_submit():
         # Validate user login
-        if db_utils.validate_password(engine,
-                                      form.username.data,
-                                      form.password.data):
+        user = db_utils.user_login(engine,
+                                   form.username.data,
+                                   form.password.data)
+        if user:
+            login_user(user)
             flash('You have been logged in.', 'success')
             return redirect(url_for('profile'))
         else:
@@ -61,3 +66,8 @@ def login():
 @app.route('/profile')
 def profile():
     return render_template('profile.html')
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db_utils.get_user_by_id(engine, user_id)
