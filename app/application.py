@@ -1,19 +1,20 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-import pymysql
-from settings import (MYSQL_USER, MYSQL_PASS, MYSQL_HOST, MYSQL_PORT, MYSQL_DB,
-                      SECRET_KEY)
+import sqlalchemy
+from sqlalchemy import create_engine
+from settings import (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_DBNAME,
+                      DB_PREFIX, SECRET_KEY)
 from forms import RegistrationForm, LoginForm
+import db_utils
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
-
-conn = pymysql.connect(host=MYSQL_HOST,
-                       user=MYSQL_USER,
-                       password=MYSQL_PASS,
-                       port=int(MYSQL_PORT),
-                       db=MYSQL_DB,
-                       charset='utf8mb4',
-                       cursorclass=pymysql.cursors.DictCursor)
+conn_str = "{}{}:{}@{}:{}/{}".format(DB_PREFIX,
+                                     DB_USER,
+                                     DB_PASS,
+                                     DB_HOST,
+                                     DB_PORT,
+                                     DB_DBNAME)
+engine = create_engine(conn_str)
 
 
 @app.route('/')
@@ -25,9 +26,16 @@ def index():
 def register():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        # TODO: Create user
-        flash('Thanks for registering', 'success')
-        return redirect(url_for('login'))
+        if db_utils.user_exists(engine, form.username.data):
+            flash('Username already taken.', 'error')
+            return redirect(url_for('register'))
+        else:
+            db_utils.create_user(engine,
+                                 form.username.data,
+                                 form.password.data,
+                                 form.email.data)
+            flash('Thanks for registering', 'success')
+            return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
 

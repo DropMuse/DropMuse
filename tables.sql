@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS users(
     id BIGINT NOT NULL AUTO_INCREMENT,
     username varchar(200) NOT NULL,
     email varchar(200) NOT NULL,
+    password_hash varchar(200) NOT NULL,
     PRIMARY KEY (id)
 );
 
