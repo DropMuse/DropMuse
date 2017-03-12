@@ -1,13 +1,12 @@
 {% extends "layout.html" %}
 {% block content %}
   <h2>Login</h2>
-  <form action="{{ url_for('login') }}" method=post>
+  {% from "_formhelpers.html" import render_field %}
+  <form method=post>
     <dl>
-      <dt>Username:
-      <dd><input type=text name=username>
-      <dt>Password:
-      <dd><input type=password name=password>
-      <dd><input type=submit value=Login>
+      {{ render_field(form.username) }}
+      {{ render_field(form.password) }}
     </dl>
+    <p><input type=submit value=Login>
   </form>
 {% endblock %}

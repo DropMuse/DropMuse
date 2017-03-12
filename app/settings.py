@@ -10,3 +10,5 @@ MYSQL_PASS = os.environ['MYSQL_PASS']
 MYSQL_HOST = os.environ['MYSQL_HOST']
 MYSQL_PORT = os.environ.get('MYSQL_PORT', 3306)
 MYSQL_DB = os.environ.get('MYSQL_DB', 'DropMuse')
+
+SECRET_KEY = os.environ.get('SECRET_KEY', 'CHANGEME')
