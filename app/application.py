@@ -94,3 +94,9 @@ def load_user(user_id):
     user = db_utils.get_user_by_id(engine, user_id)
     print user
     return user
+def about():
+    return render_template('about.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
