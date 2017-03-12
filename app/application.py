@@ -86,3 +86,11 @@ def playlist():
 @login_manager.user_loader
 def load_user(user_id):
     return db_utils.get_user_by_id(engine, user_id)
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
