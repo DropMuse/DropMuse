@@ -1,4 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
   <h2> {{ users.username }}'s Playlists</h2>
+
+  <hr>
+
+  {% for playlist in playlists %}
+  <p>
+    <a href="{{ playlist.external_url }}">{{ playlist.title }}</a> <br>
+  </p>
+  {% endfor %}
+
 {% endblock %}
