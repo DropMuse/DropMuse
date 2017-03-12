@@ -7,6 +7,7 @@ cryptography==1.7.1
 enum34==1.1.6
 Flask==0.12
 Flask-Ask==0.8.6
+Flask-Login==0.4.0
 idna==2.2
 ipaddress==1.0.18
 itsdangerous==0.24
@@ -23,5 +24,6 @@ python-dotenv==0.6.3
 PyYAML==3.12
 requests==2.13.0
 six==1.10.0
+SQLAlchemy==1.1.6
 Werkzeug==0.11.15
 WTForms==2.1
