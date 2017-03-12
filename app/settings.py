@@ -5,10 +5,10 @@ from dotenv import load_dotenv
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
-MYSQL_USER = os.environ['MYSQL_USER']
-MYSQL_PASS = os.environ['MYSQL_PASS']
-MYSQL_HOST = os.environ['MYSQL_HOST']
-MYSQL_PORT = os.environ.get('MYSQL_PORT', 3306)
-MYSQL_DB = os.environ.get('MYSQL_DB', 'DropMuse')
-
+DB_USER = os.environ['DB_USER']
+DB_PASS = os.environ['DB_PASS']
+DB_HOST = os.environ['DB_HOST']
+DB_PORT = os.environ.get('DB_PORT', 3306)
+DB_DBNAME = os.environ.get('DB_DBNAME', 'DropMuse')
+DB_PREFIX = os.environ.get('DB_PREFIX', 'pymysql://')
 SECRET_KEY = os.environ.get('SECRET_KEY', 'CHANGEME')

@@ -14,6 +14,7 @@ conn_str = "{}{}:{}@{}:{}/{}".format(DB_PREFIX,
                                      DB_HOST,
                                      DB_PORT,
                                      DB_DBNAME)
+print("Connecting to {}".format(conn_str))
 engine = create_engine(conn_str)
 
 
@@ -25,10 +26,12 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm(request.form)
-    if request.method == 'POST' and form.validate():
+    if form.validate_on_submit():
+        # Check to make sure username not taken
         if db_utils.user_exists(engine, form.username.data):
             flash('Username already taken.', 'error')
             return redirect(url_for('register'))
+        # Create user
         else:
             db_utils.create_user(engine,
                                  form.username.data,
@@ -42,10 +45,16 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
-    if request.method == 'POST' and form.validate():
-        # TODO: Validate user login
-        flash('You have been logged in.')
-        return redirect(url_for('profile'))
+    if form.validate_on_submit():
+        # Validate user login
+        if db_utils.validate_password(engine,
+                                      form.username.data,
+                                      form.password.data):
+            flash('You have been logged in.', 'success')
+            return redirect(url_for('profile'))
+        else:
+            flash('Invalid password', 'warning')
+            return redirect(url_for('login'))
     return render_template('login.html', form=form)
 
 
