@@ -8,6 +8,7 @@ enum34==1.1.6
 Flask==0.12
 Flask-Ask==0.8.6
 Flask-Login==0.4.0
+Flask-WTF==0.14.2
 idna==2.2
 ipaddress==1.0.18
 itsdangerous==0.24

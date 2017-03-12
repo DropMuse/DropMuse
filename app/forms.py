@@ -1,8 +1,9 @@
-from wtforms import Form, StringField, PasswordField, validators
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, validators
 from wtforms.fields.html5 import EmailField
 
 
-class RegistrationForm(Form):
+class RegistrationForm(FlaskForm):
     username = StringField('Username', [
         validators.DataRequired(),
         validators.Length(min=3, max=25)
@@ -19,6 +20,6 @@ class RegistrationForm(Form):
     confirm = PasswordField('Repeat Password')
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     username = StringField('Username', [validators.Length(min=4, max=25)])
     password = PasswordField('Password', [validators.DataRequired()])
