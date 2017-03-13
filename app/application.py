@@ -76,7 +76,6 @@ sqlforprofileplaylists = text('SELECT title,external_url '
                               'WHERE user_id=(SELECT user_id FROM users '
                               '               WHERE username=:user)')
 
-
 @app.route('/profile/<username>')
 @login_required
 def profile(username):
@@ -90,9 +89,16 @@ def profile(username):
                                playlists=playlists)
 
 
-@app.route('/playlist')
-def playlist():
-    return render_template('playlist.html')
+
+sqlforplaylistsongs = text('SELECT * FROM songs'
+                           'JOIN playlist_entry ON songs.playlist_id = playlist_entry.playlist_id'
+                           'WHERE playlist_entry.playlist_id = id') #ADVANCED
+@app.route('/playlist/<id>')
+@login_required
+def playlist(id):
+    with engine.connect() as con:
+        songs = con.execute(sqlforplaylistsongs)
+        return render_template('playlist.html', songs = songs, id=id)
 
 
 @login_manager.user_loader

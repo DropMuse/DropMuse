@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS playlists(
     id BIGINT NOT NULL AUTO_INCREMENT,
     user_id BIGINT NOT NULL,
     title varchar(200),
-    external_url varchar(200),
     FOREIGN KEY (user_id) REFERENCES users(id),
     PRIMARY KEY (id)
 );
