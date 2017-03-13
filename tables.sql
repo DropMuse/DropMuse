@@ -3,7 +3,9 @@ CREATE TABLE IF NOT EXISTS users(
     username varchar(200) NOT NULL,
     email varchar(200) NOT NULL,
     password_hash varchar(200) NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE (username),
+    UNIQUE (email)
 );
 
 CREATE TABLE IF NOT EXISTS playlists(
