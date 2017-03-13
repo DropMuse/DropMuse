@@ -1,10 +1,11 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, current_user, logout_user
 from flask_security import login_required
 from sqlalchemy import create_engine, text
 from settings import (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_DBNAME,
                       DB_PREFIX, SECRET_KEY)
 from forms import RegistrationForm, LoginForm, PlaylistCreateForm
+from flask_paginate import Pagination
 import db_utils
 
 app = Flask(__name__)
@@ -120,7 +121,24 @@ def playlist_create():
 @app.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
-    pass
+    search = False
+    q = request.args.get('q')
+
+    per_page = 25
+    page = request.args.get('page', type=int, default=1)
+    count, songs = db_utils.search_songs(engine, q, limit=per_page,
+                                         offset=(page - 1) * per_page)
+    pagination = Pagination(page=page,
+                            total=count,
+                            # search=search,
+                            record_name='songs',
+                            css_framework='bootstrap3',
+                            per_page=per_page)
+    return render_template('search_results.html',
+                           songs=songs,
+                           pagination=pagination,
+                           query=(q if q else '')
+                           )
 
 
 @login_manager.user_loader

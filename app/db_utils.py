@@ -52,3 +52,26 @@ def create_playlist(engine, user_id, playlist_title):
                'VALUES (:title, :user_id)', autocommit=True)
     with engine.connect() as con:
         con.execute(sql, user_id=user_id, title=playlist_title)
+
+
+def search_songs(engine, query, limit=100, offset=0):
+    '''
+    Performs search query on songs
+    '''
+    query = "%{}%".format(query.lower())
+    sql = text("SELECT * "
+               "FROM `songs` "
+               "WHERE LOWER(title) LIKE :query "
+               "      OR LOWER(artist) LIKE :query "
+               "LIMIT :limit OFFSET :offset")
+    sql_count = text("SELECT COUNT(*) "
+                     "FROM `songs` "
+                     "WHERE LOWER(title) LIKE :query "
+                     "      OR LOWER(artist) LIKE :query ")
+    with engine.connect() as con:
+        results = con.execute(sql,
+                              query=query,
+                              offset=offset,
+                              limit=limit)
+        results_count = con.execute(sql_count, query=query).fetchone()[0]
+        return results_count, list(results)

@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+<h3>Search for: "{{ query }}"</h3>
+{% if songs|length > 0 %}
+{{ pagination.info }}
+{{ pagination.links }}
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Artist</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for song in songs %}
+      <tr>
+        <td>{{ song.title }}</td>
+        <td>{{ song.artist }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{{ pagination.links }}
+{% else %}
+<p>No results found...</p>
+{% endif %}
+{% endblock %}

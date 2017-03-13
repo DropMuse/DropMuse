@@ -63,24 +63,26 @@
             <li><a href="{{ url_for('contact') }}">Contact</a></li>
           </ul>
           {% if current_user.is_authenticated %}
-          <ul class="nav navbar-nav navbar-right">
+          <ul class="nav navbar-nav navbar-right navbar-collapse">
             <li><a href="{{ url_for('logout') }}">Logout</a></li>
             <li class="active"><a href="{{ url_for('profile', username=current_user.username) }}">Profile</a></li>
           </ul>
-          <form class="navbar-form navbar-right" role="search" style="margin:0px;" action="{{ url_for('search') }}">
+          <form id="search_form" class="navbar-form navbar-right" role="search" style="margin:0px;">
             <div class="form-group">
-              <input type="text" class="form-control" placeholder="Search">
+              <input id="search_form_query" type="text" class="form-control col-xs-4" placeholder="Search for songs...">
             </div>
             <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
           </form>
+          
           {% else %}
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="{{ url_for('register') }}">Register</a></li>
+            <li><a href="{{ url_for('register') }}">Sign Up</a></li>
             <li class="active"><a href="{{ url_for('login') }}">Login</a></li>
           </ul>
           {% endif %}
           </ul>
         </div><!--/.nav-collapse -->
+      </div>
       </div>
     </nav>
     <div class="container">
@@ -97,11 +99,25 @@
           {% endif %}
         {% endwith %}
         <div id="content">{% block content %}{% endblock %}</div>
-        <div id="footer">
-          {% block footer %}
-          &copy; Copyright 2017 <a href="{{ url_for('about') }}">DropMuse</a>.
-          {% endblock %}
-        </div>
     </div>
+    <footer class="footer">
+      {% block footer %}
+      <div class="container">
+        <p class="text-muted">&copy; Copyright 2017 <a href="{{ url_for('about') }}">DropMuse</a></p>
+      </div>
+      {% endblock %}
+    </footer>
+  <script>
+  $(document).ready(function() {
+    $("#search_form").submit(function(event) {
+      event.preventDefault();
+      $this = $(this);
+      var base_url = "{{ url_for('search') }}";
+      var query = $('#search_form_query').val();
+      var url = base_url + '?q=' + query;
+      window.location.href = url;
+    });
+  });
+  </script>
   </body>
 </html>
