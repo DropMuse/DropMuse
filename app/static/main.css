@@ -53,6 +53,10 @@ span.psw {
     padding-top: 16px;
 }
 
+.container {
+    max-width: 75%;
+}
+
 /* Change styles for span and cancel button on extra small screens */
 @media screen and (max-width: 300px) {
     span.psw {
@@ -61,5 +65,8 @@ span.psw {
     }
     .cancelbtn {
        width: 100%;
+    }
+    .container {
+        max-width: 100%;
     }
 }

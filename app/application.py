@@ -71,9 +71,9 @@ def logout():
     return redirect(url_for('index'))
 
 # ADVANCED QUERY
-sqlforprofileplaylists = text('SELECT title,external_url '
+sqlforprofileplaylists = text('SELECT `title`, `id`, `external_url` '
                               'FROM playlists '
-                              'WHERE user_id=(SELECT user_id FROM users '
+                              'WHERE user_id=(SELECT id FROM users '
                               '               WHERE username=:user)')
 
 
@@ -87,20 +87,20 @@ def profile(username):
         playlists = con.execute(sqlforprofileplaylists, user=username)
         return render_template('profile.html',
                                user=current_user,
-                               playlists=playlists)
+                               playlists=list(playlists))
 
 # ADVANCED
-sqlforplaylistsongs = text('SELECT * FROM songs'
+sqlforplaylistsongs = text('SELECT * FROM songs '
                            'JOIN playlist_entry '
-                           'ON songs.playlist_id = playlist_entry.playlist_id'
-                           'WHERE playlist_entry.playlist_id = id')
+                           'ON songs.id=playlist_entry.song_id '
+                           'WHERE playlist_entry.playlist_id=:playlist_id')
 
 
 @app.route('/playlist/<playlist_id>')
 @login_required
 def playlist(playlist_id):
     with engine.connect() as con:
-        songs = con.execute(sqlforplaylistsongs)
+        songs = con.execute(sqlforplaylistsongs, playlist_id=playlist_id)
         return render_template('playlist.html', songs=songs, id=playlist_id)
 
 
@@ -110,9 +110,17 @@ def playlist_create():
     form = PlaylistCreateForm()
     if form.validate_on_submit():
         # Create playlist
-        db_utils.create_playlist(engine, current_user.get_id(), form.title.data)
+        db_utils.create_playlist(engine,
+                                 current_user.get_id(),
+                                 form.title.data)
         return redirect(url_for('profile', username=current_user.username))
     return render_template('playlist_create.html', form=form)
+
+
+@app.route('/search', methods=['GET', 'POST'])
+@login_required
+def search():
+    pass
 
 
 @login_manager.user_loader

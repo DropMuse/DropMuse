@@ -1,12 +1,15 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h2> Playlist: {{ id }}</h2>
+<h2> Playlist: {{ id }}</h2>
 
- {% for song in songs %}
-  <p>
-     Title: {{song.title}}, Artist: {{song.artist}}, Album: {{song.album}} <a href="{{song.external_url}}">Click to listen><br>
-  </p>
-  {% endfor %}
+{% for song in songs %}
+<p>
+  Title: {{song.title}}, Artist: {{song.artist}}, Album: {{song.album}} <a href="{{song.external_url}}">Click to listen><br>
+</p>
+{% endfor %}
+{% if song|length == 0 %}
+<p>This playlist has no songs.</p>
+{% endif %}
 
 {% endblock %}
 

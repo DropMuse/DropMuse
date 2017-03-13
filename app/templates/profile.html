@@ -4,8 +4,8 @@
 <h2> {{ user.username }}'s Playlists</h2>
 
 <hr>
-<div class="container">
-<table id="playlist-table" width="75%" cellspacing="0">
+{% if playlists|length > 0 %}
+<table id="playlist-table" width="100%" cellspacing="0">
   <thead>
     <tr>
       <th>Playlist Name</th>
@@ -19,12 +19,10 @@
       <td><a href="{{url_for('playlist', playlist_id=playlist.id)}}">{{ playlist.title }}</a></td>
     </tr>
     {% endfor %}
-    <tr>
-      <td>test</td>
-      <td>test</td>
-    </tr>
   </tbody>
 </table>
-</div>
 <script>$('#playlist-table').DataTable();</script>
+{% else %}
+<p>You have no playlists. Want to <a href="{{ url_for('playlist_create') }}">create</a> one?</p>
+{% endif %}
 {% endblock %}
