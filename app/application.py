@@ -2,24 +2,18 @@ from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, current_user, logout_user
 from flask_security import login_required
 from sqlalchemy import create_engine, text
-from settings import (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_DBNAME,
-                      DB_PREFIX, SECRET_KEY)
+from settings import DB_URL, SECRET_KEY
 from forms import RegistrationForm, LoginForm, PlaylistCreateForm
 from flask_paginate import Pagination
 import db_utils
+import os
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 login_manager = LoginManager()
 login_manager.init_app(app)
-conn_str = "{}{}:{}@{}:{}/{}".format(DB_PREFIX,
-                                     DB_USER,
-                                     DB_PASS,
-                                     DB_HOST,
-                                     DB_PORT,
-                                     DB_DBNAME)
-print("Connecting to {}".format(conn_str))
-engine = create_engine(conn_str)
+print("Connecting to {}".format(DB_URL))
+engine = create_engine(DB_URL)
 
 
 @app.route('/')
