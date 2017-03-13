@@ -25,7 +25,7 @@ def user_login(engine, user, password):
     Validates a password with a user. Checks that the hashed passwords match
     '''
     sql = text('SELECT password_hash, id '
-               'FROM users
+               'FROM users '
                'WHERE username=:user')
     with engine.connect() as con:
         res = con.execute(sql, user=user).fetchone()
