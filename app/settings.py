@@ -20,4 +20,4 @@ conn_str = "{}{}:{}@{}:{}/{}".format(DB_PREFIX,
                                      DB_PORT,
                                      DB_DBNAME)
 
-DB_URL = os.environ('DATABASE_URL', conn_str)
+DB_URL = os.environ.get('DATABASE_URL', conn_str)
