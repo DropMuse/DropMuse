@@ -64,18 +64,24 @@ def login():
     return render_template('login.html', form=form)
 
 
-sqlforprofileuser = text('SELECT username FROM users WHERE username=:user')
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+# ADVANCED QUERY
 sqlforprofileplaylists = text('SELECT title,external_url '
                               'FROM playlists '
-                              'WHERE user_id=(SELECT user_id FROM users WHERE username=:user)') #ADVANCED
+                              'WHERE user_id=(SELECT user_id FROM users '
+                              '               WHERE username=:user)')
 
 
 @app.route('/profile/<username>')
 @login_required
 def profile(username):
     with engine.connect() as con:
-        profile = con.execute(sqlforprofileuser, user=username)
-        if username == None:
+        if username is None:
             flash('User %s not found.' % username)
             return redirect(url_for('index'))
         playlists = con.execute(sqlforprofileplaylists, user=username)
@@ -92,12 +98,13 @@ def playlist():
 @login_manager.user_loader
 def load_user(user_id):
     user = db_utils.get_user_by_id(engine, user_id)
-    print user
     return user
+
 
 @app.route('/about')
 def about():
     return render_template('about.html')
+
 
 @app.route('/contact')
 def contact():

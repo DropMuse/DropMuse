@@ -24,7 +24,9 @@ def user_login(engine, user, password):
     '''
     Validates a password with a user. Checks that the hashed passwords match
     '''
-    sql = text('SELECT `password_hash`, `id` FROM `users` WHERE `username`=:user')
+    sql = text('SELECT `password_hash`, `id` '
+               'FROM `users` '
+               'WHERE `username`=:user')
     with engine.connect() as con:
         res = con.execute(sql, user=user).fetchone()
         if res and len(res) > 0 and check_password_hash(res[0], password):
@@ -32,8 +34,11 @@ def user_login(engine, user, password):
 
 
 def get_user_by_id(engine, user_id):
-    sql = text('SELECT * FROM `users` WHERE `id`=:id')
+    '''
+    Creates a User object for user with id of user_id
+    '''
+    sql = text('SELECT `id`, `username` FROM `users` WHERE `id`=:id')
     with engine.connect() as con:
         res = con.execute(sql, id=user_id).fetchone()
         if res:
-            return User(user_id)
+            return User(user_id, username=res[1])
