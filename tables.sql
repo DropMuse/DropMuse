@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS users(
-    id BIGINT NOT NULL AUTO_INCREMENT,
+    id SERIAL,
     username varchar(200) NOT NULL,
     email varchar(200) NOT NULL,
     password_hash varchar(200) NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users(
 );
 
 CREATE TABLE IF NOT EXISTS playlists(
-    id BIGINT NOT NULL AUTO_INCREMENT,
+    id SERIAL,
     user_id BIGINT NOT NULL,
     title varchar(200),
     FOREIGN KEY (user_id) REFERENCES users(id),
@@ -17,11 +17,11 @@ CREATE TABLE IF NOT EXISTS playlists(
 );
 
 CREATE TABLE IF NOT EXISTS songs(
-    id BIGINT NOT NULL AUTO_INCREMENT,
+    id SERIAL,
     title varchar(200),
     artist varchar(200),
     album varchar(200),
-    lyrics LONGTEXT,
+    lyrics TEXT,
     external_url varchar(200),
     PRIMARY KEY (id)
 );

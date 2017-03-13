@@ -6,7 +6,6 @@ from settings import DB_URL, SECRET_KEY
 from forms import RegistrationForm, LoginForm, PlaylistCreateForm
 from flask_paginate import Pagination
 import db_utils
-import os
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -66,7 +65,7 @@ def logout():
     return redirect(url_for('index'))
 
 # ADVANCED QUERY
-sqlforprofileplaylists = text('SELECT `title`, `id`, `external_url` '
+sqlforprofileplaylists = text('SELECT title, id, external_url '
                               'FROM playlists '
                               'WHERE user_id=(SELECT id FROM users '
                               '               WHERE username=:user)')
@@ -115,7 +114,6 @@ def playlist_create():
 @app.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
-    search = False
     q = request.args.get('q')
 
     per_page = 25
