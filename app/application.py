@@ -4,7 +4,7 @@ from flask_security import login_required
 from sqlalchemy import create_engine, text
 from settings import (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_DBNAME,
                       DB_PREFIX, SECRET_KEY)
-from forms import RegistrationForm, LoginForm
+from forms import RegistrationForm, LoginForm, PlaylistCreateForm
 import db_utils
 
 app = Flask(__name__)
@@ -76,6 +76,7 @@ sqlforprofileplaylists = text('SELECT title,external_url '
                               'WHERE user_id=(SELECT user_id FROM users '
                               '               WHERE username=:user)')
 
+
 @app.route('/profile/<username>')
 @login_required
 def profile(username):
@@ -88,17 +89,30 @@ def profile(username):
                                user=current_user,
                                playlists=playlists)
 
-
-
+# ADVANCED
 sqlforplaylistsongs = text('SELECT * FROM songs'
-                           'JOIN playlist_entry ON songs.playlist_id = playlist_entry.playlist_id'
-                           'WHERE playlist_entry.playlist_id = id') #ADVANCED
-@app.route('/playlist/<id>')
+                           'JOIN playlist_entry '
+                           'ON songs.playlist_id = playlist_entry.playlist_id'
+                           'WHERE playlist_entry.playlist_id = id')
+
+
+@app.route('/playlist/<playlist_id>')
 @login_required
-def playlist(id):
+def playlist(playlist_id):
     with engine.connect() as con:
         songs = con.execute(sqlforplaylistsongs)
-        return render_template('playlist.html', songs = songs, id=id)
+        return render_template('playlist.html', songs=songs, id=playlist_id)
+
+
+@app.route('/playlist/new', methods=['GET', 'POST'])
+@login_required
+def playlist_create():
+    form = PlaylistCreateForm()
+    if form.validate_on_submit():
+        # Create playlist
+        db_utils.create_playlist(engine, current_user.get_id(), form.title.data)
+        return redirect(url_for('profile', username=current_user.username))
+    return render_template('playlist_create.html', form=form)
 
 
 @login_manager.user_loader

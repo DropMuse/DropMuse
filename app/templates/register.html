@@ -1,11 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="space">
-  <div>
-  <h2>Early Adopters - Register Here!</h2>
-  {% from "_formhelpers.html" import render_field %}
+<div class="space"></div>
+<h2>Early Adopters - Register Here!</h2>
+{% from "_formhelpers.html" import render_field %}
 
-  <div class="form-container">
+<div class="form-container">
   <form method="POST" action="{{ url_for('register') }}">
     {{ form.csrf_token }}
     {{ form.username.label }} {{ form.username(size=20) }}
@@ -17,8 +16,7 @@
     {{ form.confirm.label }} {{ form.confirm(size=20) }}
 
     <button type="submit" class="form-button">Register</button>
-<!--    <input type="checkbox" checked="checked"> Remember me -->
-  </div>
-</form>
-<div class="space">
+  </form>
+</div>
+<div class="space"></div>
 {% endblock %}

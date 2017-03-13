@@ -1,13 +1,30 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h2> {{ user.username }}'s Playlists</h2>
+{% include "_datatables.html" %}
+<h2> {{ user.username }}'s Playlists</h2>
 
-  <hr>
-
-  {% for playlist in playlists %}
-  <p>
-    <a href="{{url_for('playlist', playlist_id=playlist.id)}}">{{ playlist.title }}</a> <br>
-  </p>
-  {% endfor %}
-
+<hr>
+<div class="container">
+<table id="playlist-table" width="75%" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Playlist Name</th>
+      <th>Link</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for playlist in playlists %}
+    <tr>
+      <td>{{ playlist.title }}</td>
+      <td><a href="{{url_for('playlist', playlist_id=playlist.id)}}">{{ playlist.title }}</a></td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <td>test</td>
+      <td>test</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<script>$('#playlist-table').DataTable();</script>
 {% endblock %}

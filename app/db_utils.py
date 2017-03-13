@@ -42,3 +42,13 @@ def get_user_by_id(engine, user_id):
         res = con.execute(sql, id=user_id).fetchone()
         if res:
             return User(user_id, username=res[1])
+
+
+def create_playlist(engine, user_id, playlist_title):
+    '''
+    Creates a playlist in the given user's account
+    '''
+    sql = text('INSERT INTO `playlists` (`title`, `user_id`) '
+               'VALUES (:title, :user_id)', autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql, user_id=user_id, title=playlist_title)
