@@ -8,6 +8,7 @@
       <th>Title</th>
       <th>Artist</th>
       <th>Album</th>
+      <th>Duration</th>
       <th></th>
     </tr>
   </thead>
@@ -17,6 +18,7 @@
       <td>{{song.title}}</td>
       <td>{{song.artist}}</td>
       <td>{{song.album}}</td>
+      <td>{{ format_duration(song.duration) }}</td>
       <td><a class="btn-sm btn-primary" href="{{song.external_url}}"><span class="glyphicon glyphicon-play"></span></a></td>
     </tr>
     {% endfor %}

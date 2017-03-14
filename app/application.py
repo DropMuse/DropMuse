@@ -7,6 +7,7 @@ from settings import DB_URL, SECRET_KEY
 from forms import RegistrationForm, LoginForm, PlaylistCreateForm
 from flask_paginate import Pagination
 import db_utils
+import utils
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -14,6 +15,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 print("Connecting to {}".format(DB_URL))
 engine = create_engine(DB_URL)
+
+app.jinja_env.globals.update(format_duration=utils.format_duration)
 
 
 @app.route('/')
