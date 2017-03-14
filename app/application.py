@@ -65,7 +65,7 @@ def logout():
     return redirect(url_for('index'))
 
 # ADVANCED QUERY
-sqlforprofileplaylists = text('SELECT title, id, external_url '
+sqlforprofileplaylists = text('SELECT title, id'
                               'FROM playlists '
                               'WHERE user_id=(SELECT id FROM users '
                               '               WHERE username=:user)')
