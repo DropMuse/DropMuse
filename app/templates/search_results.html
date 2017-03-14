@@ -4,11 +4,12 @@
 {% if songs|length > 0 %}
 {{ pagination.info }}
 {{ pagination.links }}
-<table>
+<table class="table table-striped">
   <thead>
     <tr>
       <th>Title</th>
       <th>Artist</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -16,6 +17,18 @@
       <tr>
         <td>{{ song.title }}</td>
         <td>{{ song.artist }}</td>
+        <td>
+          <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="glyphicon glyphicon-plus-sign"></span>
+            </button>
+            <ul class="dropdown-menu">
+              {% for playlist in playlists %}
+                <li><a href="#">Action</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+        </td>
       </tr>
     {% endfor %}
   </tbody>
