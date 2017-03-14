@@ -64,6 +64,10 @@ span.psw {
     max-width: 75%;
 }
 
+.flashes {
+  padding-top: 16px;
+}
+
 .footer {
   position: absolute;
   bottom: 0;
