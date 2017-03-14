@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import LoginManager, login_user, current_user, logout_user
 from flask_security import login_required
 from sqlalchemy import create_engine, text
@@ -74,14 +74,13 @@ sqlforprofileplaylists = text('SELECT title, id '
 @app.route('/profile/<username>')
 @login_required
 def profile(username):
-    with engine.connect() as con:
-        if username is None:
-            flash('User %s not found.' % username)
-            return redirect(url_for('index'))
-        playlists = con.execute(sqlforprofileplaylists, user=username)
-        return render_template('profile.html',
-                               user=current_user,
-                               playlists=list(playlists))
+    if username is None:
+        flash('User %s not found.' % username)
+        return redirect(url_for('index'))
+    playlists = db_utils.user_playlists(engine, username)
+    return render_template('profile.html',
+                           user=current_user,
+                           playlists=list(playlists))
 
 # ADVANCED
 sqlforplaylistsongs = text('SELECT * FROM songs '
@@ -95,7 +94,9 @@ sqlforplaylistsongs = text('SELECT * FROM songs '
 def playlist(playlist_id):
     with engine.connect() as con:
         songs = con.execute(sqlforplaylistsongs, playlist_id=playlist_id)
-        return render_template('playlist.html', songs=songs, id=playlist_id)
+        return render_template('playlist.html',
+                               songs=list(songs),
+                               id=playlist_id)
 
 
 @app.route('/playlist/new', methods=['GET', 'POST'])
@@ -126,11 +127,23 @@ def search():
                             record_name='songs',
                             css_framework='bootstrap3',
                             per_page=per_page)
+    playlists = db_utils.user_playlists(engine, current_user.username)
     return render_template('search_results.html',
                            songs=songs,
                            pagination=pagination,
-                           query=(q if q else '')
+                           query=(q if q else ''),
+                           playlists=list(playlists)
                            )
+
+
+@app.route('/playlist/add_song', methods=['POST'])
+@login_required
+def playlist_add():
+    data = request.json
+    song_id = data['song_id']
+    playlist_id = data['playlist_id']
+    db_utils.add_song_to_playlist(engine, song_id, playlist_id)
+    return jsonify("Added successfully")
 
 
 @login_manager.user_loader

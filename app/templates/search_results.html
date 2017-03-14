@@ -24,7 +24,7 @@
             </button>
             <ul class="dropdown-menu">
               {% for playlist in playlists %}
-                <li><a href="#">Action</a></li>
+                <li><a onclick="addSongToPlaylist({{song.id}}, {{playlist.id}})">{{playlist.title}}</a></li>
               {% endfor %}
             </ul>
           </div>
@@ -33,6 +33,23 @@
     {% endfor %}
   </tbody>
 </table>
+<script>
+function addSongToPlaylist(songId, playlistId) {
+  $.ajax({
+    type: "POST",
+    url: "{{ url_for('playlist_add') }}",
+    data: JSON.stringify({
+      song_id: songId,
+      playlist_id: playlistId
+    }),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function() {
+      window.location = "{{url_for('playlist', playlist_id="")}}" + playlistId;
+    }
+  });
+}
+</script>
 {{ pagination.links }}
 {% else %}
 <p>No results found...</p>

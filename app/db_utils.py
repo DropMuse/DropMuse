@@ -75,3 +75,24 @@ def search_songs(engine, query, limit=100, offset=0):
                               limit=limit)
         results_count = con.execute(sql_count, query=query).fetchone()[0]
         return results_count, list(results)
+
+
+def user_playlists(engine, username):
+    ''' Returns the playlists of a user '''
+    # ADVANCED QUERY
+    sqlforprofileplaylists = text('SELECT title, id '
+                                  'FROM playlists '
+                                  'WHERE user_id=(SELECT users.id FROM users '
+                                  '               WHERE users.username=:user)')
+    with engine.connect() as con:
+        playlists = con.execute(sqlforprofileplaylists, user=username)
+        return playlists
+
+
+def add_song_to_playlist(engine, song_id, playlist_id):
+    ''' Adds song to the given playlist '''
+    sql = text('INSERT INTO playlist_entry (song_id, playlist_id) '
+               'VALUES (:song_id, :playlist_id)', autocommit=True)
+
+    with engine.connect() as con:
+        con.execute(sql, song_id=song_id, playlist_id=playlist_id)
