@@ -79,11 +79,11 @@ def search_songs(engine, query, limit=100, offset=0):
 
 def user_playlists(engine, username):
     ''' Returns the playlists of a user '''
-    profile_plists = text('SELECT playlists.*, COUNT(*), SUM(duration) '
+    profile_plists = text('SELECT playlists.*, COUNT(songs.id), SUM(duration) '
                           'FROM playlists '
-                          'JOIN playlist_entry '
+                          'LEFT JOIN playlist_entry '
                           'ON playlists.id=playlist_entry.playlist_id '
-                          'JOIN songs '
+                          'LEFT JOIN songs '
                           'ON playlist_entry.song_id=songs.id '
                           'WHERE playlists.user_id=(SELECT users.id '
                           '                         FROM users '
@@ -94,7 +94,7 @@ def user_playlists(engine, username):
         for p in con.execute(profile_plists, user=username):
             playlists.append(Playlist(p.id,
                                       title=p.title,
-                                      count=p['COUNT(*)'],
+                                      count=p['COUNT(songs.id)'],
                                       duration=p['SUM(duration)']))
         return playlists
 

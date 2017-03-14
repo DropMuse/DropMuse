@@ -23,7 +23,7 @@
     <tr>
       <td>{{ playlist.title }}</td>
       <td>{{ playlist.count }}</td>
-      <td>{{ playlist.duration }}</td>
+      <td>{{ "{}:{}".format(playlist.duration // 60, playlist.duration % 60) if playlist.duration else "0:00"}}</td>
       <td><a class="btn btn-default" href="{{url_for('playlist', playlist_id=playlist.id)}}">View</a></td>
     </tr>
     {% endfor %}
