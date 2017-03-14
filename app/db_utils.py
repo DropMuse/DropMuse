@@ -79,6 +79,7 @@ def search_songs(engine, query, limit=100, offset=0):
 
 def user_playlists(engine, username):
     ''' Returns the playlists of a user '''
+    # ADVANCED
     profile_plists = text('SELECT playlists.*, COUNT(songs.id), SUM(duration) '
                           'FROM playlists '
                           'LEFT JOIN playlist_entry '
@@ -106,3 +107,21 @@ def add_song_to_playlist(engine, song_id, playlist_id):
 
     with engine.connect() as con:
         con.execute(sql, song_id=song_id, playlist_id=playlist_id)
+
+
+def playlist_songs(engine, playlist_id):
+    # ADVANCED
+    sqlforplaylistsongs = text('SELECT * FROM songs '
+                               'JOIN playlist_entry '
+                               'ON songs.id=playlist_entry.song_id '
+                               'WHERE playlist_entry.playlist_id=:playlist_id')
+    with engine.connect() as con:
+        return con.execute(sqlforplaylistsongs, playlist_id=playlist_id)
+
+
+def playlist_details(engine, playlist_id):
+    sql = text('SELECT * '
+               'FROM playlists '
+               'WHERE id=:playlist_id')
+    with engine.connect() as con:
+        return con.execute(sql, playlist_id=playlist_id).fetchone()
