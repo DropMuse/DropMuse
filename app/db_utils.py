@@ -1,6 +1,6 @@
 from werkzeug.security import (generate_password_hash, check_password_hash)
 from sqlalchemy import text
-from user import User
+from models import User, Playlist
 
 
 def user_exists(engine, user):
@@ -79,13 +79,23 @@ def search_songs(engine, query, limit=100, offset=0):
 
 def user_playlists(engine, username):
     ''' Returns the playlists of a user '''
-    # ADVANCED QUERY
-    sqlforprofileplaylists = text('SELECT title, id '
-                                  'FROM playlists '
-                                  'WHERE user_id=(SELECT users.id FROM users '
-                                  '               WHERE users.username=:user)')
+    profile_plists = text('SELECT playlists.*, COUNT(*), SUM(duration) '
+                          'FROM playlists '
+                          'JOIN playlist_entry '
+                          'ON playlists.id=playlist_entry.playlist_id '
+                          'JOIN songs '
+                          'ON playlist_entry.song_id=songs.id '
+                          'WHERE playlists.user_id=(SELECT users.id '
+                          '                         FROM users '
+                          '                         WHERE username=:user) '
+                          'GROUP BY playlists.id')
     with engine.connect() as con:
-        playlists = con.execute(sqlforprofileplaylists, user=username)
+        playlists = []
+        for p in con.execute(profile_plists, user=username):
+            playlists.append(Playlist(p.id,
+                                      title=p.title,
+                                      count=p['COUNT(*)'],
+                                      duration=p['SUM(duration)']))
         return playlists
 
 
