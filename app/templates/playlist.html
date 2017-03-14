@@ -1,13 +1,15 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Playlist: {{ id }}</h2>
+<h2>Playlist: {{ playlist.title }}</h2>
 
+{% if songs|length > 0 %}
 <table class="table table-striped">
   <thead>
     <tr>
       <th>Title</th>
       <th>Artist</th>
       <th>Album</th>
+      <th>Duration</th>
       <th></th>
     </tr>
   </thead>
@@ -17,13 +19,13 @@
       <td>{{song.title}}</td>
       <td>{{song.artist}}</td>
       <td>{{song.album}}</td>
-      <td><a class="btn-sm btn-primary" href="{{song.external_url}}"><span class="glyphicon glyphicon-play"></span></a></td>
+      <td>{{ format_duration(song.duration) }}</td>
+      <td><a class="btn-sm btn-primary" href="{{ song.external_url }}"><span class="glyphicon glyphicon-play"></span></a></td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-
-{% if songs|length == 0 %}
+{% else %}
 <p>This playlist has no songs.</p>
 {% endif %}
 

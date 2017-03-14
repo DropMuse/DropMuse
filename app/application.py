@@ -7,6 +7,7 @@ from settings import DB_URL, SECRET_KEY
 from forms import RegistrationForm, LoginForm, PlaylistCreateForm
 from flask_paginate import Pagination
 import db_utils
+import utils
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -14,6 +15,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 print("Connecting to {}".format(DB_URL))
 engine = create_engine(DB_URL)
+
+app.jinja_env.globals.update(format_duration=utils.format_duration)
 
 
 @app.route('/')
@@ -27,7 +30,7 @@ def register():
     if form.validate_on_submit():
         # Check to make sure username not taken
         if db_utils.user_exists(engine, form.username.data):
-            flash('Username already taken.', 'error')
+            flash('Username already taken.', 'danger')
             return redirect(url_for('register'))
         # Create user
         else:
@@ -83,21 +86,15 @@ def profile(username):
                            user=current_user,
                            playlists=list(playlists))
 
-# ADVANCED
-sqlforplaylistsongs = text('SELECT * FROM songs '
-                           'JOIN playlist_entry '
-                           'ON songs.id=playlist_entry.song_id '
-                           'WHERE playlist_entry.playlist_id=:playlist_id')
-
 
 @app.route('/playlist/<playlist_id>')
 @login_required
 def playlist(playlist_id):
-    with engine.connect() as con:
-        songs = con.execute(sqlforplaylistsongs, playlist_id=playlist_id)
-        return render_template('playlist.html',
-                               songs=list(songs),
-                               id=playlist_id)
+    songs = db_utils.playlist_songs(engine, playlist_id)
+    playlist = db_utils.playlist_details(engine, playlist_id)
+    return render_template('playlist.html',
+                           songs=list(songs),
+                           playlist=playlist)
 
 
 @app.route('/playlist/new', methods=['GET', 'POST'])
