@@ -144,6 +144,16 @@ def playlist_add():
     return jsonify("Added successfully")
 
 
+@app.route('/playlist/edit', methods=['PUT'])
+@login_required
+def playlist_edit():
+    data = request.json
+    playlist_id = data['playlist_id']
+    new_title = data['title']
+    db_utils.playlist_update(engine, playlist_id, new_title)
+    return jsonify("Updated title")
+
+
 @login_manager.user_loader
 def load_user(user_id):
     user = db_utils.get_user_by_id(engine, user_id)
