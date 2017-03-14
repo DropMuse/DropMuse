@@ -1,4 +1,5 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
+from flask import (Flask, render_template, redirect, url_for, flash, request,
+                   jsonify)
 from flask_login import LoginManager, login_user, current_user, logout_user
 from flask_security import login_required
 from sqlalchemy import create_engine, text
