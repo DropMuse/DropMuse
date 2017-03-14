@@ -21,14 +21,19 @@
     ```
 
 4. Add your local DB credentials to your `.env`.
+5. Create the SQL tables from `tables.sql` in your database.
 
 ### Production setup
 
 Set the following environment variables accordingly:
-* `MYSQL_USER`
-* `MYSQL_PASS`
-* `MYSQL_HOST`
-* `MYSQL_PORT`
+* `DB_USER`
+* `DB_PASS`
+* `DB_HOST`
+* `DB_PORT`
+* `DB_DBNAME`
+* `DB_PREFIX`
+
+Alternatively, you can set `DATABASE_URL` to specify the full URL. (Used for Heroku)
 
 ## Run the app
 
