@@ -10,10 +10,11 @@ CREATE TABLE IF NOT EXISTS users(
 
 CREATE TABLE IF NOT EXISTS playlists(
     id SERIAL,
-    user_id BIGINT NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
     title varchar(200),
     FOREIGN KEY (user_id) REFERENCES users(id),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE (user_id)
 );
 
 CREATE TABLE IF NOT EXISTS songs(
@@ -27,16 +28,16 @@ CREATE TABLE IF NOT EXISTS songs(
 );
 
 CREATE TABLE IF NOT EXISTS playlist_entry(
-    playlist_id BIGINT NOT NULL,
-    song_id BIGINT NOT NULL,
+    playlist_id BIGINT UNSIGNED NOT NULL,
+    song_id BIGINT UNSIGNED NOT NULL,
     FOREIGN KEY (playlist_id) REFERENCES playlists(id),
     FOREIGN KEY (song_id) REFERENCES songs(id)
 );
 
 CREATE TABLE IF NOT EXISTS votes(
-    playlist_id BIGINT NOT NULL,
-    song_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
+    playlist_id BIGINT UNSIGNED NOT NULL,
+    song_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
     FOREIGN KEY (playlist_id) REFERENCES playlists(id),
     FOREIGN KEY (song_id) REFERENCES songs(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
