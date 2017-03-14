@@ -18,13 +18,31 @@
       <td>{{song.artist}}</td>
       <td>{{song.album}}</td>
       <td><a class="btn-sm btn-primary" href="{{song.external_url}}"><span class="glyphicon glyphicon-play"></span></a></td>
+      <td><a onclick="removeSongFromPlaylist({{song.id}}, {{id}})" class="btn-sm btn-primary" ><span class="glyphicon glyphicon-remove-circle"></span></td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+<script>
+function removeSongFromPlaylist(songId, playlistId) {
+  $.ajax({
+    type: "POST",
+    url: "{{ url_for('playlist_remove') }}",
+    data: JSON.stringify({
+      song_id: songId,
+      playlist_id: playlistId
+    }),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function() {
+      window.location = "{{url_for('playlist', playlist_id="")}}" + playlistId;
+    }
+  });
+}
+</script>
 
 {% if songs|length == 0 %}
-<p>This playlist has no songs.</p>
+<p>This playlist has no songs. Use the search bar above to search for songs to add!</p>
 {% endif %}
 
 {% endblock %}

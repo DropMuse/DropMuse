@@ -36,6 +36,7 @@ def register():
                                  form.email.data)
             flash('Thanks for registering', 'success')
             return redirect(url_for('login'))
+    print form
     return render_template('register.html', form=form)
 
 
@@ -144,6 +145,15 @@ def playlist_add():
     playlist_id = data['playlist_id']
     db_utils.add_song_to_playlist(engine, song_id, playlist_id)
     return jsonify("Added successfully")
+
+@app.route('/playlist/remove_song', methods=['POST'])
+@login_required
+def playlist_remove():
+    data = request.json
+    song_id = data['song_id']
+    playlist_id = data['playlist_id']
+    db_utils.remove_song_from_playlist(engine, song_id, playlist_id)
+    return jsonify("Removed successfully")
 
 
 @login_manager.user_loader
