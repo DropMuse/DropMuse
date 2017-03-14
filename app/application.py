@@ -65,10 +65,10 @@ def logout():
     return redirect(url_for('index'))
 
 # ADVANCED QUERY
-sqlforprofileplaylists = text('SELECT title, id'
+sqlforprofileplaylists = text('SELECT title, id '
                               'FROM playlists '
-                              'WHERE user_id=(SELECT id FROM users '
-                              '               WHERE username=:user)')
+                              'WHERE user_id=(SELECT users.id FROM users '
+                              '               WHERE users.username=:user)')
 
 
 @app.route('/profile/<username>')
