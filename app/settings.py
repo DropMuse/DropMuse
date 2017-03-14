@@ -24,5 +24,6 @@ conn_str = "{}{}:{}@{}:{}/{}".format(DB_PREFIX,
 DB_URL = os.environ.get('DATABASE_URL', conn_str)
 DB_URL = os.environ.get('CLEARDB_DATABASE_URL', DB_URL)
 
+# Force use of pymysql driver
 if DB_URL.startswith('mysql://'):
-    DB_URL = 'mysql+pymyql:' + DB_URL.split(':')[0]
+    DB_URL = 'mysql+pymyql' + DB_URL[5:]
