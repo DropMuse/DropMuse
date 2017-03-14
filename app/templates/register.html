@@ -1,22 +1,24 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="space"></div>
-<h2>Early Adopters - Register Here!</h2>
 {% from "_formhelpers.html" import render_field %}
 
-<div class="form-container">
-  <form method="POST" action="{{ url_for('register') }}">
-    {{ form.csrf_token }}
-    {{ form.username.label }} {{ form.username(size=20) }}
+<div class="form-container row">
+  <div class="col-md-6 col-md-offset-3">
+    <h2>Early Adopters - Register Here!</h2>
+    <div class="space"></div>
+    <form method="POST" action="{{ url_for('register') }}">
+      {{ form.csrf_token }}
+      {{ form.username.label }} {{ form.username(size=20) }}
 
-    {{ form.email.label }} {{ form.email(size=20) }}
+      {{ form.email.label }} {{ form.email(size=20) }}
 
-    {{ form.password.label }} {{ form.password(size=20) }}
-        
-    {{ form.confirm.label }} {{ form.confirm(size=20) }}
+      {{ form.password.label }} {{ form.password(size=20) }}
+          
+      {{ form.confirm.label }} {{ form.confirm(size=20) }}
 
-    <button type="submit" class="form-button">Register</button>
-  </form>
+      <button type="submit" class="form-button">Register</button>
+    </form>
+  </div>
 </div>
 <div class="space"></div>
 {% endblock %}

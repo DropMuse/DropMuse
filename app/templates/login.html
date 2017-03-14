@@ -1,15 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="space" />
-<h2>Login Here!</h2>
 
-<div class="form-container">
-  <form method="POST" action="{{ url_for('login') }}">
-    {{ form.csrf_token }}
-    {{ form.username.label }} {{ form.username(size=20) }}
-    {{ form.password.label }} {{ form.password(size=20) }}        
-    <button type="submit" class="form-button">Login</button>
-  </form>
+<div class="form-container row">
+  <div class="col-md-6 col-md-offset-3">
+    <h2>Login Here!</h2>
+    <form method="POST" action="{{ url_for('login') }}">
+      {{ form.csrf_token }}
+      {{ form.username.label }} {{ form.username(size=20) }}
+      {{ form.password.label }} {{ form.password(size=20) }}        
+      <button type="submit" class="form-button">Login</button>
+    </form>
+  </div>
 </div>
 <div class="space">
 {% endblock %}

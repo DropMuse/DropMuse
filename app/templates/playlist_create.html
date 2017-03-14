@@ -1,12 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Create a Playlist:</h2>
 
-<div class="form-container">
-  <form method="POST" action="{{ url_for('playlist_create') }}">
-    {{ form.csrf_token }}
-    {{ form.title.label }} {{ form.title(size=20) }}
-    <button type="submit" class="form-button">Create</button>
-  </form>
+<div class="form-container row">
+  <div class="col-md-6 col-md-offset-3">
+    <h2>Create a Playlist:</h2>
+    <form method="POST" action="{{ url_for('playlist_create') }}">
+      {{ form.csrf_token }}
+      {{ form.title.label }} {{ form.title(size=20) }}
+      <button type="submit" class="form-button">Create</button>
+    </form>
+  </div>
 </div>
 {% endblock %}

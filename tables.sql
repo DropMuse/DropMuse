@@ -13,8 +13,7 @@ CREATE TABLE IF NOT EXISTS playlists(
     user_id BIGINT UNSIGNED NOT NULL,
     title varchar(200),
     FOREIGN KEY (user_id) REFERENCES users(id),
-    PRIMARY KEY (id),
-    UNIQUE (user_id)
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS songs(
@@ -24,6 +23,7 @@ CREATE TABLE IF NOT EXISTS songs(
     album varchar(200),
     lyrics TEXT,
     external_url varchar(200),
+    sentiment TEXT,
     PRIMARY KEY (id)
 );
 
