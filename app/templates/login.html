@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "_formhelpers.html" import render_field %}
 {% block content %}
 <div class="space" />
 
@@ -7,8 +8,8 @@
     <h2>Login Here!</h2>
     <form method="POST" action="{{ url_for('login') }}">
       {{ form.csrf_token }}
-      {{ form.username.label }} {{ form.username(size=20) }}
-      {{ form.password.label }} {{ form.password(size=20) }}        
+      {{ render_field(form.username) }}
+      {{ render_field(form.password) }}
       <button type="submit" class="form-button">Login</button>
     </form>
   </div>
