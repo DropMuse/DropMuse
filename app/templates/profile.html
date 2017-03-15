@@ -23,8 +23,10 @@
       <td>{{ playlist.title }}</td>
       <td>{{ playlist.count }}</td>
       <td>{{ format_duration(playlist.duration) }}</td>
-      <td><a class="btn btn-default" href="{{url_for('playlist', playlist_id=playlist.id)}}">View</a></td>
-      <td><a onclick="removePlaylistFromUser({{user.id}}, {{playlist.id}},'{{user.username}}')" class="btn btn-default" ><span class="glyphicon glyphicon-minus-sign"></span></a> <td>
+      <td><a class="btn btn-default btn-sm" href="{{url_for('playlist', playlist_id=playlist.id)}}">View</a></td>
+      <td>
+        <a onclick="removePlaylistFromUser({{user.id}}, {{playlist.id}},'{{user.username}}')" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-minus-sign"></span></a>
+      <td>
     </tr>
     {% endfor %}
   </tbody>
