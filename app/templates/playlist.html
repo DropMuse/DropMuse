@@ -21,9 +21,10 @@
       <td>{{song.album}}</td>
       <td>{{ format_duration(song.duration) }}</td>
       <td>
-        <a class="btn-sm btn-primary" href="{{ song.external_url }}" target="#"><span class="glyphicon glyphicon-play"></span></a>
-        <a onclick="removeSongFromPlaylist({{song.id}}, {{playlist.id}})" class="btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span>
-      </td>
+        <a class="btn-sm btn-primary" href="{{ song.external_url }}" target="#"><span class="glyphicon glyphicon-play"></span></a> </td>
+      <td>
+        <a onclick="removeSongFromPlaylist({{song.id}}, {{playlist.id}})" class="btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span> <td>
+
     </tr>
     {% endfor %}
   </tbody>
