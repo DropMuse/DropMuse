@@ -2,6 +2,7 @@
 {% block content %}
 <h2>Playlist: {{ playlist.title }}</h2>
 <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#editPlaylistName">Edit</button>
+<hr>
 {% if songs|length > 0 %}
 <table class="table table-striped">
   <thead>
@@ -59,7 +60,7 @@ function removeSongFromPlaylist(songId, playlistId) {
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
+          <h4 class="modal-title">Edit Playlist Title</h4>
         </div>
         <div class="modal-body">
             <label>Playlist Title</label>

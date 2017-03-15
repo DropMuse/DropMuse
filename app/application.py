@@ -154,6 +154,7 @@ def playlist_song_remove():
     db_utils.remove_song_from_playlist(engine, song_id, playlist_id)
     return jsonify("Removed successfully")
 
+
 @app.route('/profile/remove_playlist', methods=['POST'])
 @login_required
 def playlist_remove():
