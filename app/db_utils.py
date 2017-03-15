@@ -122,8 +122,10 @@ def remove_playlist_from_user(engine, user_id, playlist_id):
     sql = text('DELETE FROM playlists '
                'WHERE playlists.user_id=:user_id '
                'AND playlists.id=:playlist_id', autocommit=True)
-
+    sql2 = text('DELETE FROM playlist_entry '
+               'WHERE playlist_entry.playlist_id=:playlist_id ', autocommit=True)
     with engine.connect() as con:
+        con.execute(sql2, playlist_id=playlist_id)
         con.execute(sql, user_id=user_id, playlist_id=playlist_id)
 
 
