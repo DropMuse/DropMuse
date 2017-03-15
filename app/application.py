@@ -183,6 +183,13 @@ def playlist_edit():
     return jsonify("Updated title")
 
 
+@app.route('/songs/<song_id>')
+@login_required
+def song_info(song_id):
+    song = db_utils.song_by_id(engine, song_id)
+    return render_template('song.html', song=song)
+
+
 @login_manager.user_loader
 def load_user(user_id):
     user = db_utils.get_user_by_id(engine, user_id)

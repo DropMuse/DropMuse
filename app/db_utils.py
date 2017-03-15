@@ -156,3 +156,11 @@ def playlist_update(engine, playlist_id, title):
                'WHERE id=:playlist_id', autocommit=True)
     with engine.connect() as con:
         con.execute(sql, playlist_id=playlist_id, title=title)
+
+
+def song_by_id(engine, song_id):
+    sql = text('SELECT * '
+               'FROM songs '
+               'WHERE id=:song_id')
+    with engine.connect() as con:
+        return con.execute(sql, song_id=song_id).fetchone()
