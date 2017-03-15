@@ -89,15 +89,19 @@ sqlforplaylistsongs = text('SELECT * FROM songs '
                            'ON songs.id=playlist_entry.song_id '
                            'WHERE playlist_entry.playlist_id=:playlist_id')
 
+sqlforplaylisttitle = text('SELECT title from playlists '
+                           'WHERE playlists.id=:playlist_id')
 
 @app.route('/playlist/<playlist_id>')
 @login_required
 def playlist(playlist_id):
     with engine.connect() as con:
         songs = con.execute(sqlforplaylistsongs, playlist_id=playlist_id)
-        return render_template('playlist.html',
+        playlisttitle = con.execute(sqlforplaylisttitle, playlist_id=playlist_id)
+        for row in playlisttitle:
+            return render_template('playlist.html',
                                songs=list(songs),
-                               id=playlist_id)
+                               id=playlist_id, title = row['title'])
 
 
 @app.route('/playlist/new', methods=['GET', 'POST'])

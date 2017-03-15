@@ -53,7 +53,6 @@ def create_playlist(engine, user_id, playlist_title):
     with engine.connect() as con:
         con.execute(sql, user_id=user_id, title=playlist_title)
 
-
 def search_songs(engine, query, limit=100, offset=0):
     '''
     Performs search query on songs
