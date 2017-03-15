@@ -18,10 +18,10 @@
       <tr>
         <td>{{ song.title }}</td>
         <td>{{ song.artist }}</td>
-        <td><a class="btn btn-default" href="{{ url_for('song_info', song_id=song.id) }}">Details</a></td>
+        <td><a class="btn btn-default btn-sm" href="{{ url_for('song_info', song_id=song.id) }}"><span class="glyphicon glyphicon-info-sign"></span></a></td>
         <td>
           <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="glyphicon glyphicon-plus-sign"></span>
             </button>
             <ul class="dropdown-menu">
