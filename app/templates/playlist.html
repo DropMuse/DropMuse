@@ -20,13 +20,14 @@
       <td>{{song.artist}}</td>
       <td>{{song.album}}</td>
       <td>{{ format_duration(song.duration) }}</td>
-      <td><a class="btn-sm btn-primary" href="{{ song.external_url }}"><span class="glyphicon glyphicon-play"></span></a></td>
-      <td><a onclick="removeSongFromPlaylist({{song.id}}, {{id}})" class="btn-sm btn-primary" ><span class="glyphicon glyphicon-remove-circle"></span></td>
+      <td>
+        <a class="btn-sm btn-primary" href="{{ song.external_url }}"><span class="glyphicon glyphicon-play"></span></a>
+        <a onclick="removeSongFromPlaylist({{song.id}}, {{playlist.id}})" class="btn-sm btn-primary" ><span class="glyphicon glyphicon-remove-circle"></span>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-{% else %}
 <script>
 function removeSongFromPlaylist(songId, playlistId) {
   $.ajax({
@@ -44,6 +45,7 @@ function removeSongFromPlaylist(songId, playlistId) {
   });
 }
 </script>
+{% else %}
 <p>This playlist has no songs. Use the search bar above to search for songs to add!</p>
 {% endif %}
 

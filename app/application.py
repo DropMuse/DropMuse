@@ -87,19 +87,15 @@ def profile(username):
                            user=current_user,
                            playlists=list(playlists))
 
-sqlforplaylisttitle = text('SELECT title from playlists '
-                           'WHERE playlists.id=:playlist_id')
 
 @app.route('/playlist/<playlist_id>')
 @login_required
 def playlist(playlist_id):
     songs = db_utils.playlist_songs(engine, playlist_id)
     playlist = db_utils.playlist_details(engine, playlist_id)
-        playlisttitle = con.execute(sqlforplaylisttitle, playlist_id=playlist_id)
-        for row in playlisttitle:
     return render_template('playlist.html',
                            songs=list(songs),
-                               id=playlist_id, title = row['title'])
+                           playlist=playlist)
 
 
 @app.route('/playlist/new', methods=['GET', 'POST'])
@@ -147,6 +143,7 @@ def playlist_add():
     playlist_id = data['playlist_id']
     db_utils.add_song_to_playlist(engine, song_id, playlist_id)
     return jsonify("Added successfully")
+
 
 @app.route('/playlist/remove_song', methods=['POST'])
 @login_required

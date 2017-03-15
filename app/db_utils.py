@@ -107,10 +107,12 @@ def add_song_to_playlist(engine, song_id, playlist_id):
     with engine.connect() as con:
         con.execute(sql, song_id=song_id, playlist_id=playlist_id)
 
+
 def remove_song_from_playlist(engine, song_id, playlist_id):
     ''' Adds song to the given playlist '''
     sql = text('DELETE FROM playlist_entry '
-               'WHERE playlist_entry.song_id=:song_id AND playlist_entry.playlist_id=:playlist_id', autocommit=True)
+               'WHERE playlist_entry.song_id=:song_id '
+               'AND playlist_entry.playlist_id=:playlist_id', autocommit=True)
 
     with engine.connect() as con:
         con.execute(sql, song_id=song_id, playlist_id=playlist_id)
