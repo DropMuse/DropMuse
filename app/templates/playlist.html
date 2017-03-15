@@ -20,10 +20,12 @@
       <td>{{song.artist}}</td>
       <td>{{song.album}}</td>
       <td>{{ format_duration(song.duration) }}</td>
-      <td>
-        <a class="btn-sm btn-primary" href="{{ song.external_url }}" target="#"><span class="glyphicon glyphicon-play"></span></a> </td>
-      <td>
-        <a onclick="removeSongFromPlaylist({{song.id}}, {{playlist.id}})" class="btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span> <td>
+      {% if song.external_url != None %}
+      <td> <a class="btn-sm btn-primary" href="{{ song.external_url }}" target="#"><span class="glyphicon glyphicon-play"></span></a> </td>
+      {% else %}
+      <td> </td>
+      {% endif %}
+      <td> <a onclick="removeSongFromPlaylist({{song.id}}, {{playlist.id}})" class="btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span></a> <td>
 
     </tr>
     {% endfor %}
@@ -87,7 +89,7 @@ $(function(){
       success: function() {
         location.reload();
       }
-    }); 
+    });
   });
 });
 </script>
