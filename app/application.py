@@ -145,7 +145,6 @@ def playlist_add():
     return jsonify("Added successfully")
 
 
-<<<<<<< HEAD
 @app.route('/playlist/remove_song', methods=['POST'])
 @login_required
 def playlist_remove():
@@ -154,7 +153,8 @@ def playlist_remove():
     playlist_id = data['playlist_id']
     db_utils.remove_song_from_playlist(engine, song_id, playlist_id)
     return jsonify("Removed successfully")
-=======
+
+
 @app.route('/playlist/edit', methods=['PUT'])
 @login_required
 def playlist_edit():
@@ -163,7 +163,6 @@ def playlist_edit():
     new_title = data['title']
     db_utils.playlist_update(engine, playlist_id, new_title)
     return jsonify("Updated title")
->>>>>>> playlist_edit
 
 
 @login_manager.user_loader
