@@ -1,8 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-{% include "_datatables.html" %}
 <h2> {{ user.username }}'s Profile</h2>
-
 <hr>
 {% if playlists|length > 0 %}
 <a href="{{url_for('playlist_create')}}" class="btn btn-default">New Playlist <span class="glyphicon glyphicon-plus-sign"></span></a>
@@ -16,6 +14,7 @@
       <th>Songs</th>
       <th>Duration</th>
       <th></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -26,11 +25,8 @@
       <td>{{ format_duration(playlist.duration) }}</td>
       <td><a class="btn btn-default" href="{{url_for('playlist', playlist_id=playlist.id)}}">View</a></td>
       <td><a onclick="removePlaylistFromUser({{user.id}}, {{playlist.id}},'{{user.username}}')" class="btn btn-default" ><span class="glyphicon glyphicon-minus-sign"></span></a> <td>
-
     </tr>
-
     {% endfor %}
-
   </tbody>
 </table>
 

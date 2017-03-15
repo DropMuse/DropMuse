@@ -11,6 +11,7 @@ import utils
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 login_manager = LoginManager()
 login_manager.init_app(app)
 print("Connecting to {}".format(DB_URL))
