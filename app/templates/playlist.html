@@ -35,7 +35,7 @@
 function removeSongFromPlaylist(songId, playlistId) {
   $.ajax({
     type: "POST",
-    url: "{{ url_for('playlist_remove') }}",
+    url: "{{ url_for('playlist_song_remove') }}",
     data: JSON.stringify({
       song_id: songId,
       playlist_id: playlistId

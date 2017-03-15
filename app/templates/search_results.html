@@ -37,7 +37,7 @@
 function addSongToPlaylist(songId, playlistId) {
   $.ajax({
     type: "POST",
-    url: "{{ url_for('playlist_add') }}",
+    url: "{{ url_for('playlist_song_add') }}",
     data: JSON.stringify({
       song_id: songId,
       playlist_id: playlistId

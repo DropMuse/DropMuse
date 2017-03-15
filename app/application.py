@@ -137,7 +137,7 @@ def search():
 
 @app.route('/playlist/add_song', methods=['POST'])
 @login_required
-def playlist_add():
+def playlist_song_add():
     data = request.json
     song_id = data['song_id']
     playlist_id = data['playlist_id']
@@ -147,11 +147,20 @@ def playlist_add():
 
 @app.route('/playlist/remove_song', methods=['POST'])
 @login_required
-def playlist_remove():
+def playlist_song_remove():
     data = request.json
     song_id = data['song_id']
     playlist_id = data['playlist_id']
     db_utils.remove_song_from_playlist(engine, song_id, playlist_id)
+    return jsonify("Removed successfully")
+
+@app.route('/profile/remove_playlist', methods=['POST'])
+@login_required
+def playlist_remove():
+    data = request.json
+    user_id = data['user_id']
+    playlist_id = data['playlist_id']
+    db_utils.remove_playlist_from_user(engine, user_id, playlist_id)
     return jsonify("Removed successfully")
 
 

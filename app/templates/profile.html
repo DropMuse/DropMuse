@@ -25,10 +25,33 @@
       <td>{{ playlist.count }}</td>
       <td>{{ format_duration(playlist.duration) }}</td>
       <td><a class="btn btn-default" href="{{url_for('playlist', playlist_id=playlist.id)}}">View</a></td>
+      <td><a onclick="removePlaylistFromUser({{user.id}}, {{playlist.id}},'{{user.username}}')" class="btn btn-default" ><span class="glyphicon glyphicon-minus-sign"></span></a> <td>
+
     </tr>
+
     {% endfor %}
+
   </tbody>
 </table>
+
+<script>
+function removePlaylistFromUser(userId, playlistId, userName) {
+  $.ajax({
+    type: "POST",
+    url: "{{url_for('playlist_remove')}}",
+    data: JSON.stringify({
+      user_id: userId,
+      playlist_id: playlistId
+    }),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function() {
+      window.location = "{{url_for('profile', username="")}}" + userName;
+    }
+  });
+}
+</script>
+
 {% else %}
 <p>You have no playlists. Want to <a href="{{ url_for('playlist_create') }}">create</a> one?</p>
 {% endif %}
