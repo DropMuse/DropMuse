@@ -64,8 +64,9 @@
           </ul>
           {% if current_user.is_authenticated %}
           <ul class="nav navbar-nav navbar-right navbar-collapse">
-            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+
             <li class="active"><a href="{{ url_for('profile', username=current_user.username) }}">Profile</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
           </ul>
           <form id="search_form" class="navbar-form navbar-right" role="search" style="margin:0px;">
             <div class="form-group">
