@@ -22,7 +22,7 @@
       <td>{{ format_duration(song.duration) }}</td>
       <td>
         <a class="btn-sm btn-primary" href="{{ song.external_url }}"><span class="glyphicon glyphicon-play"></span></a>
-        <a onclick="removeSongFromPlaylist({{song.id}}, {{playlist.id}})" class="btn-sm btn-primary" ><span class="glyphicon glyphicon-remove-circle"></span>
+        <a onclick="removeSongFromPlaylist({{song.id}}, {{playlist.id}})" class="btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span>
       </td>
     </tr>
     {% endfor %}
