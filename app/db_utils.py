@@ -53,7 +53,6 @@ def create_playlist(engine, user_id, playlist_title):
     with engine.connect() as con:
         con.execute(sql, user_id=user_id, title=playlist_title)
 
-
 def search_songs(engine, query, limit=100, offset=0):
     '''
     Performs search query on songs
@@ -104,6 +103,14 @@ def add_song_to_playlist(engine, song_id, playlist_id):
     ''' Adds song to the given playlist '''
     sql = text('INSERT INTO playlist_entry (song_id, playlist_id) '
                'VALUES (:song_id, :playlist_id)', autocommit=True)
+
+    with engine.connect() as con:
+        con.execute(sql, song_id=song_id, playlist_id=playlist_id)
+
+def remove_song_from_playlist(engine, song_id, playlist_id):
+    ''' Adds song to the given playlist '''
+    sql = text('DELETE FROM playlist_entry '
+               'WHERE playlist_entry.song_id=:song_id AND playlist_entry.playlist_id=:playlist_id', autocommit=True)
 
     with engine.connect() as con:
         con.execute(sql, song_id=song_id, playlist_id=playlist_id)
