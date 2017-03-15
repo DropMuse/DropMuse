@@ -12,8 +12,10 @@ import utils
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+
 login_manager = LoginManager()
 login_manager.init_app(app)
+
 print("Connecting to {}".format(DB_URL))
 engine = create_engine(DB_URL)
 
@@ -28,6 +30,8 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
+    if current_user.is_authenticated:
+        return redirect(url_for('profile', username=current_user.username))
     if form.validate_on_submit():
         # Check to make sure username not taken
         if db_utils.user_exists(engine, form.username.data):
