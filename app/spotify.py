@@ -8,7 +8,10 @@ import db_utils
 import application as app
 
 spotify_blueprint = Blueprint('spotify', __name__, template_folder='templates')
-SCOPE = ""
+SCOPE = ' '.join(["playlist-read-private",
+                  "playlist-modify-public",
+                  "playlist-modify-private",
+                  "user-library-read"])
 
 redirect_uri = 'http://' + SERVER_NAME + '/spotify/callback'
 sp_oauth = oauth2.SpotifyOAuth(SPOTIFY_CLIENT_ID,
