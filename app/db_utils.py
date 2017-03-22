@@ -1,6 +1,7 @@
 from werkzeug.security import (generate_password_hash, check_password_hash)
 from sqlalchemy import text
 from models import User, Playlist
+import json
 
 
 def user_exists(engine, user):
@@ -164,3 +165,12 @@ def song_by_id(engine, song_id):
                'WHERE id=:song_id')
     with engine.connect() as con:
         return con.execute(sql, song_id=song_id).fetchone()
+
+
+def spotify_credentials_upsert(engine, user_id, token_info):
+    sql = text('INSERT INTO spotify_credentials(user_id, token_info) '
+               'VALUES (:user_id, :token_info) '
+               'ON DUPLICATE KEY UPDATE token_info=:token_info;',
+               autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql, user_id=user_id, token_info=json.dumps(token_info))

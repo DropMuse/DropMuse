@@ -8,6 +8,13 @@ CREATE TABLE IF NOT EXISTS users(
     UNIQUE (email)
 );
 
+CREATE TABLE IF NOT EXISTS spotify_credentials(
+    user_id BIGINT UNSIGNED,
+    token_info TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    PRIMARY KEY (user_id)
+);
+
 CREATE TABLE IF NOT EXISTS playlists(
     id SERIAL,
     user_id BIGINT UNSIGNED NOT NULL,
