@@ -4,7 +4,12 @@
 <hr>
 {% if playlists|length > 0 %}
 <a href="{{url_for('playlist_create')}}" class="btn btn-default">New Playlist <span class="glyphicon glyphicon-plus-sign"></span></a>
-</div>
+<!-- Connect to Spotify links -->
+{% if user.spotify %}
+<a href="{{url_for('spotify.disconnect')}}" class="btn btn-default">Disconnect Spotify Account <i class="fa fa-spotify"></i></a>
+{% else %}
+<a href="{{url_for('spotify.start_authentication')}}" class="btn btn-default">Connect to Spotify <i class="fa fa-spotify"></i></a>
+{% endif %}
 <hr>
 <h4>Playlists</h4>
 <table class="table" id="playlist-table" width="100%" cellspacing="0">

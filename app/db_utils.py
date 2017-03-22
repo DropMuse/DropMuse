@@ -174,3 +174,21 @@ def spotify_credentials_upsert(engine, user_id, token_info):
                autocommit=True)
     with engine.connect() as con:
         con.execute(sql, user_id=user_id, token_info=json.dumps(token_info))
+
+
+def spotify_creds_for_user(engine, user_id):
+    sql = text('SELECT token_info '
+               'FROM spotify_credentials '
+               'WHERE user_id=:user_id;')
+    with engine.connect() as con:
+        res = con.execute(sql, user_id=user_id).first()
+        if res:
+            return json.loads(res[0])
+
+
+def spotify_creds_delete(engine, user_id):
+    sql = text('DELETE FROM spotify_credentials '
+               'WHERE user_id=:user_id;',
+               autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql, user_id=user_id)

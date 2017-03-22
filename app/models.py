@@ -1,4 +1,8 @@
 from flask_login import UserMixin
+import spotify
+import spotipy
+import db_utils
+import application as app
 
 
 class User(UserMixin):
@@ -6,6 +10,25 @@ class User(UserMixin):
     def __init__(self, user_id, username=None):
         self.id = user_id
         self.username = username
+        self._spotify = None
+
+    @property
+    def spotify(self):
+        oa_client = spotify.sp_oauth
+        # Fetch credentials from database
+        if not self._spotify:
+            self._spotify = db_utils.spotify_creds_for_user(app.engine,
+                                                            self.id)
+        # No credentials exist for user
+        if self._spotify is None:
+            return None
+        # Refresh tokens if nescessary
+        if oa_client.is_token_expired(self._spotify):
+            self._spotify = oa_client.refresh_access_token(self._spotify)
+            db_utils.spotify_credentials_upsert(app.engine,
+                                                self.id,
+                                                self._spotify)
+        return spotipy.Spotify(auth=self._spotify)
 
 
 class Playlist(object):
