@@ -90,10 +90,9 @@ $(function(){
         title: $("#edit_playlist_input").val()
       }),
       contentType: "application/json",
-      dataType: 'json',
-      success: function() {
-        location.reload();
-      }
+      dataType: 'json'
+    }).always(function(){
+      location.reload();
     });
   });
 });

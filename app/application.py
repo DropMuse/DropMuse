@@ -77,12 +77,6 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-# ADVANCED QUERY
-sqlforprofileplaylists = text('SELECT title, id '
-                              'FROM playlists '
-                              'WHERE user_id=(SELECT users.id FROM users '
-                              '               WHERE users.username=:user)')
-
 
 @app.route('/profile/<username>')
 @login_required
@@ -149,6 +143,13 @@ def playlist_song_add():
     data = request.json
     song_id = data['song_id']
     playlist_id = data['playlist_id']
+
+    # Authenticate user
+    details = db_utils.playlist_details(engine, playlist_id)
+    if (not details) or details.user_id != current_user.id:
+        flash('Not authorized to edit this playlist', 'danger')
+        return '', 403
+
     db_utils.add_song_to_playlist(engine, song_id, playlist_id)
     return jsonify("Added successfully")
 
@@ -159,6 +160,13 @@ def playlist_song_remove():
     data = request.json
     song_id = data['song_id']
     playlist_id = data['playlist_id']
+
+    # Authenticate user
+    details = db_utils.playlist_details(engine, playlist_id)
+    if (not details) or details.user_id != current_user.id:
+        flash('Not authorized to edit this playlist', 'danger')
+        return '', 403
+
     db_utils.remove_song_from_playlist(engine, song_id, playlist_id)
     return jsonify("Removed successfully")
 
@@ -169,6 +177,13 @@ def playlist_remove():
     data = request.json
     user_id = data['user_id']
     playlist_id = data['playlist_id']
+
+    # Authenticate user
+    details = db_utils.playlist_details(engine, playlist_id)
+    if (not details) or details.user_id != current_user.id:
+        flash('Not authorized to delete this playlist', 'danger')
+        return '', 403
+
     db_utils.remove_playlist_from_user(engine, user_id, playlist_id)
     return jsonify("Removed successfully")
 
@@ -179,6 +194,13 @@ def playlist_edit():
     data = request.json
     playlist_id = data['playlist_id']
     new_title = data['title']
+
+    # Authenticate user
+    details = db_utils.playlist_details(engine, playlist_id)
+    if (not details) or details.user_id != current_user.id:
+        flash('Not authorized to edit this playlist', 'danger')
+        return '', 403
+
     db_utils.playlist_update(engine, playlist_id, new_title)
     return jsonify("Updated title")
 
