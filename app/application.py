@@ -27,7 +27,10 @@ app.jinja_env.globals.update(format_duration=utils.format_duration)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    if current_user.is_authenticated:
+        return redirect(url_for('profile', username=current_user.username))
+    else:
+        return render_template('index.html')
 
 
 @app.route('/register', methods=['GET', 'POST'])
