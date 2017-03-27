@@ -25,15 +25,30 @@
 
 ### Production setup
 
-Set the following environment variables accordingly:
-* `DB_USER`
-* `DB_PASS`
-* `DB_HOST`
-* `DB_PORT`
-* `DB_DBNAME`
-* `DB_PREFIX`
+#### Database Setup
+Set the following environment variables accordingly (or add to `app/.env`):
+* `DB_USER` - MySQL username
+* `DB_PASS` - MySQL password
+* `DB_HOST` - MySQL server hostname
+* `DB_PORT` - MySQL server port
+* `DB_DBNAME` - MySQL database
+* `DB_PREFIX` - URI scheme to use for connecting to the db. (Defaults to `mysql+pymysql://`)
 
 Alternatively, you can set `DATABASE_URL` to specify the full URL. (Used for Heroku)
+
+#### Spotify Setup
+Set the following environment variables accordingly (or add to `app/.env`):
+
+* `SPOTIFY_CLIENT_ID`
+* `SPOTIFY_CLIENT_SECRET`
+
+You can obtain a `CLIENT_ID` and `CLIENT_SECRET` [here](https://developer.spotify.com/my-applications/#!/applications).
+Use `http://SERVER_HOST:PORT/spotify/callback` as the `Redirect URI` when setting up the app.
+
+#### Misc
+
+* `SERVER_HOST` - Defaults to `localhost`. Used to construct Spotify callback URL.
+* `PORT` - Defaults to `5000`. Flask server port. Used to construct Spotify callback URL.
 
 ## Run the app
 

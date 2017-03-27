@@ -14,6 +14,7 @@ flask-paginate==0.4.5
 Flask-Principal==0.4.0
 Flask-Security==1.7.5
 Flask-WTF==0.14.2
+honcho==0.7.1
 idna==2.2
 ipaddress==1.0.18
 itsdangerous==0.24
@@ -32,6 +33,7 @@ python-dotenv==0.6.3
 PyYAML==3.12
 requests==2.13.0
 six==1.10.0
+git+https://github.com/plamere/spotipy.git@7499d8e511ce3f5588a16702c9533233ec716cab
 SQLAlchemy==1.1.6
 Werkzeug==0.11.15
 WTForms==2.1

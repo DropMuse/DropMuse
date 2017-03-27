@@ -3,15 +3,18 @@ from flask import (Flask, render_template, redirect, url_for, flash, request,
 from flask_login import LoginManager, login_user, current_user, logout_user
 from flask_security import login_required
 from sqlalchemy import create_engine, text
-from settings import DB_URL, SECRET_KEY
+from settings import DB_URL, SECRET_KEY, SERVER_NAME
 from forms import RegistrationForm, LoginForm, PlaylistCreateForm
 from flask_paginate import Pagination
 import db_utils
 import utils
+from .spotify import spotify_blueprint
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['SERVER_NAME'] = SERVER_NAME
+app.register_blueprint(spotify_blueprint, url_prefix='/spotify')
 
 login_manager = LoginManager()
 login_manager.init_app(app)
