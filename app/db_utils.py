@@ -192,3 +192,34 @@ def spotify_creds_delete(engine, user_id):
                autocommit=True)
     with engine.connect() as con:
         con.execute(sql, user_id=user_id)
+
+
+def song_max_id(engine):
+    sql = text('SELECT MAX(id) '
+               'FROM songs;')
+    with engine.connect() as con:
+        return con.execute(sql).fetchone()[0]
+
+
+def playlist_max_id(engine):
+    sql = text('SELECT MAX(id) '
+               'FROM playlists;')
+    with engine.connect() as con:
+        return con.execute(sql).fetchone()[0]
+
+
+def get_playlist_entries(engine):
+    sql = text('SELECT playlist_id, song_id '
+               'FROM playlist_entry;')
+    with engine.connect() as con:
+        return con.execute(sql)
+
+
+def song_sentiments(engine):
+    sql = text('SELECT sentiment '
+               'FROM songs;')
+    with engine.connect() as con:
+        results = con.execute(sql).fetchall()
+        print results[0][0]
+        results = [json.loads(r[0]) for r in results]
+        return results
