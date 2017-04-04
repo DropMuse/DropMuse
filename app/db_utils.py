@@ -306,3 +306,23 @@ def song_details_many(engine, song_ids):
         for i in song_ids:
             ordered.append(next(res for res in results if res.id == i))
         return ordered
+
+
+def song_lyrics(engine):
+    sql = text('SELECT id, lyrics '
+               'FROM songs;')
+    with engine.connect() as con:
+        return con.execute(sql).fetchall()
+
+
+def add_song_keyword(engine, song_id, keyword, weight):
+    '''
+    keyword_tupes:
+        in form (keyword, weight)
+    '''
+    sql = text('INSERT INTO keywords(song_id, word, weight)'
+               'VALUES (:song_id, :keyword, :weight) '
+               'ON DUPLICATE KEY UPDATE weight=:weight;',
+               autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql, song_id=song_id, keyword=keyword, weight=weight)

@@ -64,5 +64,6 @@ CREATE TABLE IF NOT EXISTS keywords(
     song_id BIGINT UNSIGNED NOT NULL,
     word VARCHAR(200),
     weight DOUBLE,
+    FOREIGN KEY (song_id) REFERENCES songs(id),
     PRIMARY KEY (song_id, word)
 );

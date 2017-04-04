@@ -3,6 +3,7 @@ import pickle
 import db_utils
 import scipy
 import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 NUM_COMPONENTS = 30
 NUM_EPOCHS = 20
@@ -79,3 +80,20 @@ def dump_model(model):
     '''
     with open(MODEL_LOCATION, 'wb') as f:
         pickle.dump(model, f)
+
+
+def extract_keywords():
+    songs = db_utils.song_lyrics(engine)
+    song_indices = {i: s.id for i, s in enumerate(songs)}
+    lyrics = [s.lyrics for s in songs]
+    tfidf = TfidfVectorizer(stop_words='english',
+                            max_df=0.7)
+    tfidf_mat = tfidf.fit_transform(lyrics).toarray()
+    features = tfidf.get_feature_names()
+    keywords = {}
+    for idx, l in enumerate(tfidf_mat):
+        keywords[song_indices[idx]] = [(features[x], l[x]) for x in (-l).argsort()][:10]
+    for songid, word_arr in keywords.items():
+        print "inserting: %s" % songid
+        for kw in word_arr:
+            db_utils.add_song_keyword(engine, songid, kw[0], float(kw[1]))
