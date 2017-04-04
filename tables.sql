@@ -67,6 +67,10 @@ CREATE TABLE IF NOT EXISTS votes(
         ON UPDATE CASCADE
 );
 
-    FOREIGN KEY (song_id) REFERENCES songs(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
+CREATE TABLE IF NOT EXISTS keywords(
+    song_id BIGINT UNSIGNED NOT NULL,
+    word VARCHAR(200),
+    weight DOUBLE,
+    FOREIGN KEY (song_id) REFERENCES songs(id),
+    PRIMARY KEY (song_id, word)
+);
