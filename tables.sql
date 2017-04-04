@@ -71,6 +71,8 @@ CREATE TABLE IF NOT EXISTS keywords(
     song_id BIGINT UNSIGNED NOT NULL,
     word VARCHAR(200),
     weight DOUBLE,
-    FOREIGN KEY (song_id) REFERENCES songs(id),
+    FOREIGN KEY (song_id) REFERENCES songs(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     PRIMARY KEY (song_id, word)
 );
