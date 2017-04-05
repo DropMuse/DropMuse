@@ -90,6 +90,7 @@
       </div>
     </nav>
     <div class="container">
+        <div id="flashed_messages" style="padding-top: 24px;">
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             <ul class=flashes>
@@ -102,6 +103,7 @@
             </ul>
           {% endif %}
         {% endwith %}
+        </div>
         <div id="content">{% block content %}{% endblock %}</div>
     </div>
     <footer class="footer">
