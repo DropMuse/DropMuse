@@ -3,7 +3,6 @@
 <h2> {{ user.username }}'s Profile</h2>
 <hr>
 {% if playlists|length > 0 %}
-<a href="{{url_for('playlist_create')}}" class="btn btn-default">New Playlist <span class="glyphicon glyphicon-plus-sign"></span></a>
 <!-- Connect to Spotify links -->
 {% if user.spotify %}
 <a href="{{url_for('spotify.disconnect')}}" class="btn btn-default">Disconnect Spotify Account <i class="fa fa-spotify"></i></a>
@@ -12,13 +11,14 @@
 {% endif %}
 <hr>
 <h4>Playlists</h4>
+<a href="{{url_for('playlist_create')}}" class="btn btn-default">New Playlist <span class="glyphicon glyphicon-plus-sign"></span></a>
+<a href="#" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
 <table class="table" id="playlist-table" width="100%" cellspacing="0">
   <thead>
     <tr>
       <th>Name</th>
       <th>Songs</th>
       <th>Duration</th>
-      <th></th>
       <th></th>
     </tr>
   </thead>
@@ -28,10 +28,13 @@
       <td>{{ playlist.title }}</td>
       <td>{{ playlist.count }}</td>
       <td>{{ format_duration(playlist.duration) }}</td>
-      <td><a class="btn btn-default btn-sm" href="{{url_for('playlist', playlist_id=playlist.id)}}">View</a></td>
       <td>
-        <a onclick="removePlaylistFromUser({{user.id}}, {{playlist.id}},'{{user.username}}')" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-minus-sign"></span></a>
-      <td>
+        <a class="btn btn-default btn-sm" href="{{url_for('playlist', playlist_id=playlist.id)}}">View <span class="glyphicon glyphicon-th-list"></a>
+        <a onclick="removePlaylistFromUser({{user.id}}, {{playlist.id}},'{{user.username}}')" class="btn btn-default btn-sm">Delete <span class="glyphicon glyphicon-minus-sign"></span></a>
+        {% if user.spotify %}
+        <a class="btn btn-default btn-sm">Export <i class="fa fa-spotify"></i></a>
+        {% endif %}
+      </td>
     </tr>
     {% endfor %}
   </tbody>

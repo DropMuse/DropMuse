@@ -10,6 +10,7 @@ port = os.environ.get('PORT', 5000)
 server_host = os.environ.get('SERVER_HOST', 'localhost')
 SERVER_NAME = '{}:{}'.format(server_host, port)
 SECRET_KEY = os.environ.get('SECRET_KEY', 'CHANGEME')
+SERVER_ENV = os.environ.get('SERVER_ENV', 'dev').lower()
 
 
 ''' Database Settings '''

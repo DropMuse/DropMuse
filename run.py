@@ -1,3 +1,5 @@
 #!flask/bin/python
 from app.application import app
-app.run(debug=True, host='0.0.0.0')
+from app.settings import SERVER_ENV
+DEBUG = SERVER_ENV == 'dev'
+app.run(debug=DEBUG, host='0.0.0.0')
