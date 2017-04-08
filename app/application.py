@@ -100,10 +100,10 @@ def profile(username):
 @app.route('/playlist/<playlist_id>')
 @login_required
 def playlist(playlist_id):
-    songs = db_utils.playlist_songs(engine, playlist_id)
+    entries = db_utils.playlist_songs(engine, playlist_id)
     playlist = db_utils.playlist_details(engine, playlist_id)
     return render_template('playlist.html',
-                           songs=list(songs),
+                           entries=list(entries),
                            playlist=playlist)
 
 
@@ -165,7 +165,7 @@ def playlist_song_add():
 @login_required
 def playlist_song_remove():
     data = request.json
-    song_id = data['song_id']
+    entry_position = data['entry_position']
     playlist_id = data['playlist_id']
 
     # Authenticate user
@@ -174,7 +174,7 @@ def playlist_song_remove():
         flash('Not authorized to edit this playlist', 'danger')
         return '', 403
 
-    db_utils.remove_song_from_playlist(engine, song_id, playlist_id)
+    db_utils.remove_song_from_playlist(engine, entry_position, playlist_id)
     return jsonify("Removed successfully")
 
 

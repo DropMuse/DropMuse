@@ -3,7 +3,7 @@
 <h2>Playlist: {{ playlist.title }}</h2>
 <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#editPlaylistName">Edit</button>
 <hr>
-{% if songs|length > 0 %}
+{% if entries|length > 0 %}
 <table class="table table-striped">
   <thead>
     <tr>
@@ -17,7 +17,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for song in songs %}
+    {% for song in entries %}
     <tr>
       <td>{{song.title}}</td>
       <td>{{song.artist}}</td>
@@ -31,18 +31,18 @@
       {% else %}
       <td></td>
       {% endif %}
-      <td> <a onclick="removeSongFromPlaylist({{song.id}}, {{playlist.id}})" class="btn btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span></a> <td>
+      <td> <a onclick="removeSongFromPlaylist({{song.position}}, {{playlist.id}})" class="btn btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span></a> <td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 <script>
-function removeSongFromPlaylist(songId, playlistId) {
+function removeSongFromPlaylist(entryPosition, playlistId) {
   $.ajax({
     type: "POST",
     url: "{{ url_for('playlist_song_remove') }}",
     data: JSON.stringify({
-      song_id: songId,
+      entry_position: entryPosition,
       playlist_id: playlistId
     }),
     contentType: "application/json",

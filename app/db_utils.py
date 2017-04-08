@@ -103,21 +103,28 @@ def user_playlists(engine, username):
 
 def add_song_to_playlist(engine, song_id, playlist_id):
     ''' Adds song to the given playlist '''
-    sql = text('INSERT INTO playlist_entry (song_id, playlist_id) '
-               'VALUES (:song_id, :playlist_id)', autocommit=True)
+    sql = text('INSERT INTO playlist_entry (song_id, playlist_id, position) '
+               'SELECT :song_id, :playlist_id, MAX(position) + 1 '
+               'FROM playlist_entry '
+               'WHERE playlist_id=:playlist_id', autocommit=True)
 
     with engine.connect() as con:
         con.execute(sql, song_id=song_id, playlist_id=playlist_id)
 
 
-def remove_song_from_playlist(engine, song_id, playlist_id):
+def remove_song_from_playlist(engine, position, playlist_id):
     ''' Removes song to the given playlist '''
     sql = text('DELETE FROM playlist_entry '
-               'WHERE playlist_entry.song_id=:song_id '
+               'WHERE playlist_entry.position=:position '
                'AND playlist_entry.playlist_id=:playlist_id', autocommit=True)
+    sql2 = text('UPDATE playlist_entry '
+                'SET position = position - 1 '
+                'WHERE position>:position '
+                'AND playlist_id=:playlist_id', autocommit=True)
 
     with engine.connect() as con:
-        con.execute(sql, song_id=song_id, playlist_id=playlist_id)
+        con.execute(sql, position=position, playlist_id=playlist_id)
+        con.execute(sql2, position=position, playlist_id=playlist_id)
 
 
 def remove_playlist_from_user(engine, user_id, playlist_id):
