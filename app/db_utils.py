@@ -127,6 +127,44 @@ def remove_song_from_playlist(engine, position, playlist_id):
         con.execute(sql2, position=position, playlist_id=playlist_id)
 
 
+def move_song_in_playlist(engine, old_position, new_position, playlist_id):
+    # No action needed
+    if new_position == old_position:
+        return
+    # Need to shift entries back
+    elif new_position > old_position:
+        sql = text('UPDATE playlist_entry '
+                   'SET position=position-1 '
+                   'WHERE position>:old_pos AND position<=:new_pos '
+                   'AND playlist_id=:playlist_id '
+                   'ORDER BY position', autocommit=True)
+    # Need to shift entries forward
+    else:
+        sql = text('UPDATE playlist_entry '
+                   'SET position=position+1 '
+                   'WHERE position<:old_pos AND position>=:new_pos '
+                   'AND playlist_id=:playlist_id '
+                   'ORDER BY position DESC', autocommit=True)
+    remove = text('UPDATE playlist_entry '
+                  'SET position=-1 '
+                  'WHERE position=:old_pos '
+                  'AND playlist_id=:playlist_id', autocommit=True)
+    replace = text('UPDATE playlist_entry '
+                   'SET position=:new_pos '
+                   'WHERE position=-1 '
+                   'AND playlist_id=:playlist_id', autocommit=True)
+    with engine.connect() as con:
+        # Swap moving entry to -1
+        con.execute(remove, old_pos=old_position, playlist_id=playlist_id)
+        # Move all in-between entries
+        con.execute(sql,
+                    old_pos=old_position,
+                    new_pos=new_position,
+                    playlist_id=playlist_id)
+        # Swap moving entry to correct position
+        con.execute(replace, new_pos=new_position, playlist_id=playlist_id)
+
+
 def remove_playlist_from_user(engine, user_id, playlist_id):
     ''' Removes playlist based on user_id '''
     sql = text('DELETE FROM playlists '
@@ -145,7 +183,8 @@ def playlist_songs(engine, playlist_id):
     sqlforplaylistsongs = text('SELECT * FROM songs '
                                'JOIN playlist_entry '
                                'ON songs.id=playlist_entry.song_id '
-                               'WHERE playlist_entry.playlist_id=:playlist_id')
+                               'WHERE playlist_entry.playlist_id=:playlist_id '
+                               'ORDER BY playlist_entry.position')
     with engine.connect() as con:
         return con.execute(sqlforplaylistsongs, playlist_id=playlist_id)
 

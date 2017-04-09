@@ -178,6 +178,27 @@ def playlist_song_remove():
     return jsonify("Removed successfully")
 
 
+@app.route('/playlist/move_song', methods=['POST'])
+@login_required
+def playlist_song_move():
+    data = request.json
+    old_position = data['old_position']
+    new_position = data['new_position']
+    playlist_id = data['playlist_id']
+
+    # Authenticate user
+    details = db_utils.playlist_details(engine, playlist_id)
+    if (not details) or details.user_id != current_user.id:
+        flash('Not authorized to edit this playlist', 'danger')
+        return '', 403
+
+    db_utils.move_song_in_playlist(engine,
+                                   old_position,
+                                   new_position,
+                                   playlist_id)
+    return jsonify("Removed successfully")
+
+
 @app.route('/profile/remove_playlist', methods=['POST'])
 @login_required
 def playlist_remove():

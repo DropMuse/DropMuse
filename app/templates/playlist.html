@@ -18,7 +18,7 @@
   </thead>
   <tbody>
     {% for song in entries %}
-    <tr>
+    <tr class="ui-state-default">
       <td>{{song.title}}</td>
       <td>{{song.artist}}</td>
       <td>{{song.album}}</td>
@@ -31,24 +31,45 @@
       {% else %}
       <td></td>
       {% endif %}
-      <td> <a onclick="removeSongFromPlaylist({{song.position}}, {{playlist.id}})" class="btn btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span></a> <td>
+      <td> <a onclick="removeSongFromPlaylist({{song.position}})" class="btn btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span></a> <td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 <script>
-function removeSongFromPlaylist(entryPosition, playlistId) {
+$('table tbody').sortable({
+  start: function(event, ui) {
+    ui.item.startPos = ui.item.index();
+  },
+  stop: function(event, ui) {
+    movePlaylistItem(ui.item.startPos, ui.item.index());
+  }
+});
+function movePlaylistItem(oldpos, newpos){
+  $.ajax({
+    type: "POST",
+    url: "{{ url_for('playlist_song_move') }}",
+    data: JSON.stringify({
+      old_position: oldpos,
+      new_position: newpos,
+      playlist_id: {{playlist.id}}
+    }),
+    contentType: "application/json",
+    dataType: 'json'
+  });
+}
+function removeSongFromPlaylist(entryPosition) {
   $.ajax({
     type: "POST",
     url: "{{ url_for('playlist_song_remove') }}",
     data: JSON.stringify({
       entry_position: entryPosition,
-      playlist_id: playlistId
+      playlist_id: {{playlist.id}}
     }),
     contentType: "application/json",
     dataType: 'json',
     success: function() {
-      window.location = "{{url_for('playlist', playlist_id="")}}" + playlistId;
+      window.location = "{{url_for('playlist', playlist_id=playlist.id)}}";
     }
   });
 }
