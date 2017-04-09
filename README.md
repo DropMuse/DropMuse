@@ -47,7 +47,7 @@ Use `http://SERVER_HOST:PORT/spotify/callback` as the `Redirect URI` when settin
 
 #### Misc
 
-* `SERVER_HOST` - Defaults to `localhost`. Used to construct Spotify callback URL.
+* `SERVER_NAME` - Defaults to `0.0.0.0:{PORT}`. Used to construct Spotify callback URL.
 * `PORT` - Defaults to `5000`. Flask server port. Used to construct Spotify callback URL.
 
 ## Run the app
