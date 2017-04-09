@@ -7,6 +7,7 @@
 <table class="table table-striped">
   <thead>
     <tr>
+      <th>
       <th>Title</th>
       <th>Artist</th>
       <th>Album</th>
@@ -19,6 +20,7 @@
   <tbody>
     {% for song in entries %}
     <tr class="ui-state-default">
+      <td class="handle"><i class="fa fa-bars" aria-hidden="true"></i></td>
       <td>{{song.title}}</td>
       <td>{{song.artist}}</td>
       <td>{{song.album}}</td>
@@ -38,6 +40,7 @@
 </table>
 <script>
 $('table tbody').sortable({
+  handle: ".handle",
   start: function(event, ui) {
     ui.item.startPos = ui.item.index();
   },
