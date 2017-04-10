@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Playlist: {{ playlist.title }}</h2>
-<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#editPlaylistName">Edit</button>
+<h2 class="playlist-header">Playlist: {{ playlist.title }}</h2>
+<button type="button" class="btn btn-default btn-sm pull-right" data-toggle="modal" data-target="#editPlaylistName">Edit</button>
+<div class="playlist-controls">
+  <button type="button" class="btn btn-default"><i class="fa fa-magic" aria-hidden="true"></i> Smart Add Songs</button>
+</div>
 <hr>
 {% if entries|length > 0 %}
 <table class="table table-striped">
@@ -12,6 +15,7 @@
       <th>Artist</th>
       <th>Album</th>
       <th>Duration</th>
+      <th></th>
       <th></th>
       <th></th>
     </tr>

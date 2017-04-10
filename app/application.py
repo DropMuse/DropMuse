@@ -55,7 +55,6 @@ def register():
                                  form.email.data)
             flash('Thanks for registering', 'success')
             return redirect(url_for('login'))
-    print form
     return render_template('register.html', form=form)
 
 
