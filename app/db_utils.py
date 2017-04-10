@@ -180,13 +180,16 @@ def remove_playlist_from_user(engine, user_id, playlist_id):
 
 def playlist_songs(engine, playlist_id):
     # ADVANCED
-    sqlforplaylistsongs = text('SELECT * FROM songs '
-                               'JOIN playlist_entry '
-                               'ON songs.id=playlist_entry.song_id '
-                               'WHERE playlist_entry.playlist_id=:playlist_id '
-                               'ORDER BY playlist_entry.position')
+    sql = text('SELECT *, votes.position AS vposition FROM songs '
+               'JOIN playlist_entry '
+               'ON songs.id=playlist_entry.song_id '
+               'LEFT JOIN votes '
+               'ON playlist_entry.position=votes.position '
+               'AND playlist_entry.playlist_id=votes.playlist_id '
+               'WHERE playlist_entry.playlist_id=:playlist_id '
+               'ORDER BY playlist_entry.position')
     with engine.connect() as con:
-        return con.execute(sqlforplaylistsongs, playlist_id=playlist_id)
+        return con.execute(sql, playlist_id=playlist_id)
 
 
 def playlist_details(engine, playlist_id):
@@ -259,6 +262,21 @@ def get_playlist_entries(engine):
                'FROM playlist_entry;')
     with engine.connect() as con:
         return con.execute(sql)
+
+
+def create_vote(engine, playlist_id, position):
+    sql = text('INSERT IGNORE INTO votes(playlist_id, position) '
+               'VALUES (:playlist_id, :position)', autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql, playlist_id=playlist_id, position=position)
+
+
+def delete_vote(engine, playlist_id, position):
+    sql = text('DELETE FROM  votes '
+               'WHERE playlist_id=:playlist_id '
+               'AND position=:position', autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql, playlist_id=playlist_id, position=position)
 
 
 def song_sentiments(engine):

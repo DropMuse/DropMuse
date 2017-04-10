@@ -196,7 +196,28 @@ def playlist_song_move():
                                    old_position,
                                    new_position,
                                    playlist_id)
-    return jsonify("Removed successfully")
+    return jsonify("Moved successfully")
+
+
+@app.route('/playlist/set_vote', methods=['POST'])
+@login_required
+def playlist_set_vote():
+    data = request.json
+    position = data['position']
+    vote_status = data['status']
+    playlist_id = data['playlist_id']
+
+    # Authenticate user
+    details = db_utils.playlist_details(engine, playlist_id)
+    if (not details) or details.user_id != current_user.id:
+        flash('Not authorized to edit this playlist', 'danger')
+        return '', 403
+
+    if vote_status:
+        db_utils.create_vote(engine, playlist_id, position)
+    else:
+        db_utils.delete_vote(engine, playlist_id, position)
+    return jsonify("Vote changed successfully")
 
 
 @app.route('/profile/remove_playlist', methods=['POST'])

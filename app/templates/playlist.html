@@ -14,7 +14,6 @@
       <th>Duration</th>
       <th></th>
       <th></th>
-      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -26,14 +25,15 @@
       <td>{{song.album}}</td>
       <td>{{ format_duration(song.duration) }}</td>
       <td><a class="btn btn-default btn-sm" href="{{ url_for('song_info', song_id=song.id) }}"><span class="glyphicon glyphicon-info-sign"></span></a></td>
-      {% if song.external_url != None %}
       <td>
+      {% if song.external_url != None %}
         <a class="btn btn-sm btn-primary" href="{{ song.external_url }}" target="#"><span class="glyphicon glyphicon-play"></span></a>
-      </td>
-      {% else %}
-      <td></td>
       {% endif %}
-      <td> <a onclick="removeSongFromPlaylist({{song.position}})" class="btn btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span></a> <td>
+      </td>
+      <td>
+        <a onclick="toggleVote(this)" class="btn btn-sm btn-default" ><i class="fa {{ "fa-thumbs-up" if song.vposition is not none else "fa-thumbs-o-up" }}" aria-hidden="true"></i></a>
+        <a onclick="removeSongFromPlaylist(this)" class="btn btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span></a>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
@@ -61,18 +61,36 @@ function movePlaylistItem(oldpos, newpos){
     dataType: 'json'
   });
 }
-function removeSongFromPlaylist(entryPosition) {
+function removeSongFromPlaylist(el) {
   $.ajax({
     type: "POST",
     url: "{{ url_for('playlist_song_remove') }}",
     data: JSON.stringify({
-      entry_position: entryPosition,
+      entry_position: $(el).parent().parent().index(),
       playlist_id: {{playlist.id}}
     }),
     contentType: "application/json",
     dataType: 'json',
     success: function() {
       window.location = "{{url_for('playlist', playlist_id=playlist.id)}}";
+    }
+  });
+}
+function toggleVote(el) {
+  var newStatus = $(el).find("i").hasClass("fa-thumbs-o-up");
+  $.ajax({
+    type: "POST",
+    url: "{{url_for('playlist_set_vote') }}", 
+    data: JSON.stringify({
+      playlist_id: {{ playlist.id }},
+      position: $(el).parent().parent().index(),
+      status: newStatus
+    }),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function() {
+      $(el).find("i").toggleClass("fa-thumbs-o-up");
+      $(el).find("i").toggleClass("fa-thumbs-up");
     }
   });
 }
