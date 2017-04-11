@@ -15,7 +15,8 @@ def get_interactions(engine):
     interactions = scipy.sparse.csr_matrix((num_playlists+1, num_songs+1))
     plist_records = db_utils.get_playlist_interactions(engine)
     for r in plist_records:
-        interactions[r.playlist_id, r.song_id] = 1
+        interaction_value = 2 if r.vote else 1
+        interactions[r.playlist_id, r.song_id] = interaction_value
     return interactions
 
 

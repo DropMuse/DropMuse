@@ -4,7 +4,6 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>
       <th>Title</th>
       <th>Artist</th>
       <th>Album</th>
@@ -17,7 +16,6 @@
   <tbody>
     {% for song in recommendations %}
     <tr class="ui-state-default">
-      <td class="handle"><i class="fa fa-bars" aria-hidden="true"></i></td>
       <td>{{song.title}}</td>
       <td>{{song.artist}}</td>
       <td>{{song.album}}</td>
@@ -28,10 +26,7 @@
         <a class="btn btn-sm btn-primary" href="{{ song.external_url }}" target="#"><span class="glyphicon glyphicon-play"></span></a>
       {% endif %}
       </td>
-      <td>
-        <a onclick="toggleVote(this)" class="btn btn-sm btn-default" ><i class="fa {{ "fa-thumbs-up" if song.vposition is not none else "fa-thumbs-o-up" }}" aria-hidden="true"></i></a>
-        <a onclick="removeSongFromPlaylist(this)" class="btn btn-sm btn-default" ><span class="glyphicon glyphicon-minus-sign"></span></a>
-      </td>
+      <td>(Add)</td>
     </tr>
     {% endfor %}
   </tbody>
