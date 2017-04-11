@@ -8,6 +8,7 @@ from forms import RegistrationForm, LoginForm, PlaylistCreateForm
 from flask_paginate import Pagination
 import db_utils
 import utils
+import recommendation
 from .spotify import spotify_blueprint
 
 app = Flask(__name__)
@@ -117,6 +118,16 @@ def playlist_create():
                                  form.title.data)
         return redirect(url_for('profile', username=current_user.username))
     return render_template('playlist_create.html', form=form)
+
+
+@app.route('/playlist/recommendations/<playlist_id>', methods=['GET', 'POST'])
+@login_required
+def playlist_recommendations(playlist_id):
+    playlist_id = int(playlist_id)
+    song_ids = recommendation.get_recommendations(engine, playlist_id)[:25]
+    songs = db_utils.song_details_many(engine, song_ids)
+    return render_template('playlist_recommendations.html',
+                           recommendations=list(songs))
 
 
 @app.route('/search', methods=['GET', 'POST'])

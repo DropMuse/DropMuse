@@ -3,7 +3,7 @@
 <h2 class="playlist-header">Playlist: {{ playlist.title }}</h2>
 <button type="button" class="btn btn-default btn-sm pull-right" data-toggle="modal" data-target="#editPlaylistName">Edit</button>
 <div class="playlist-controls">
-  <button type="button" class="btn btn-default"><i class="fa fa-magic" aria-hidden="true"></i> Smart Add Songs</button>
+  <a href="{{ url_for('playlist_recommendations', playlist_id=playlist.id) }}"><button type="button" class="btn btn-default"><i class="fa fa-magic" aria-hidden="true"></i> Smart Add Songs</button></a>
 </div>
 <hr>
 {% if entries|length > 0 %}

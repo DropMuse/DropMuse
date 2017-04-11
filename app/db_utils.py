@@ -257,9 +257,17 @@ def playlist_max_id(engine):
         return con.execute(sql).fetchone()[0]
 
 
-def get_playlist_entries(engine):
-    sql = text('SELECT playlist_id, song_id '
-               'FROM playlist_entry;')
+def get_playlist_interactions(engine):
+    '''
+    Returns playlist entries joined with their votes
+    '''
+    sql = text('SELECT playlist_entry.playlist_id AS playlist_id, '
+               '       votes.position AS vote, '
+               '       playlist_entry.song_id as song_id '
+               'FROM playlist_entry '
+               'LEFT JOIN votes '
+               'ON votes.playlist_id=playlist_entry.playlist_id '
+               'AND votes.position=playlist_entry.position;')
     with engine.connect() as con:
         return con.execute(sql)
 
@@ -284,6 +292,14 @@ def song_sentiments(engine):
                'FROM songs;')
     with engine.connect() as con:
         results = con.execute(sql).fetchall()
-        print results[0][0]
         results = [json.loads(r[0]) for r in results]
         return results
+
+
+def song_details_many(engine, song_ids):
+    sql = text('SELECT * '
+               'FROM songs '
+               'WHERE id IN :song_ids')
+    with engine.connect() as con:
+        # TODO: Order in order song_ids is passed
+        return con.execute(sql, song_ids=song_ids).fetchall()

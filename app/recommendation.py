@@ -3,24 +3,23 @@ import pickle
 import db_utils
 import scipy
 import numpy as np
-from application import engine
 
 NUM_COMPONENTS = 30
 NUM_EPOCHS = 20
 MODEL_LOCATION = 'lightfm_model.pickle'
 
 
-def get_interactions():
+def get_interactions(engine):
     num_playlists = db_utils.playlist_max_id(engine)
     num_songs = db_utils.song_max_id(engine)
     interactions = scipy.sparse.csr_matrix((num_playlists+1, num_songs+1))
-    plist_records = db_utils.get_playlist_entries(engine)
+    plist_records = db_utils.get_playlist_interactions(engine)
     for r in plist_records:
         interactions[r.playlist_id, r.song_id] = 1
     return interactions
 
 
-def get_item_features():
+def get_item_features(engine):
     sentiments = db_utils.song_sentiments(engine)
     num_songs = db_utils.song_max_id(engine)
     item_features = scipy.sparse.csr_matrix((num_songs+1, 3))
@@ -29,7 +28,7 @@ def get_item_features():
     return item_features
 
 
-def train_model():
+def train_model(engine):
     '''
     interactions is of:
       shape: (num_users, num_items)
@@ -39,8 +38,8 @@ def train_model():
       format: [pos_sent, neu_sent, neg_sent]
     '''
     model = load_model()
-    interactions = get_interactions()
-    item_features = get_item_features()
+    interactions = get_interactions(engine)
+    item_features = get_item_features(engine)
 
     model.fit(interactions,
               item_features=item_features,
@@ -50,14 +49,14 @@ def train_model():
     return model
 
 
-def get_recommendations(playlist_id):
-    model = train_model()
-    item_features = get_item_features()
+def get_recommendations(engine, playlist_id):
+    model = train_model(engine)
+    item_features = get_item_features(engine)
     num_items = item_features.shape[0]
     predictions = model.predict(playlist_id,
                                 np.arange(num_items),
                                 item_features=item_features)
-    return np.argsort(-predictions)
+    return [int(i) for i in np.argsort(-predictions)]
 
 
 def load_model():
