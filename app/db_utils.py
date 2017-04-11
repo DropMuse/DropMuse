@@ -301,5 +301,8 @@ def song_details_many(engine, song_ids):
                'FROM songs '
                'WHERE id IN :song_ids')
     with engine.connect() as con:
-        # TODO: Order in order song_ids is passed
-        return con.execute(sql, song_ids=song_ids).fetchall()
+        results = list(con.execute(sql, song_ids=song_ids).fetchall())
+        ordered = []
+        for i in song_ids:
+            ordered.append(next(res for res in results if res.id == i))
+        return ordered
