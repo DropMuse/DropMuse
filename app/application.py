@@ -274,7 +274,10 @@ def playlist_edit():
 @login_required
 def song_info(song_id):
     song = db_utils.song_by_id(engine, song_id)
-    return render_template('song.html', song=song)
+    keywords = db_utils.song_keywords(engine, song_id)
+    return render_template('song.html',
+                           song=song,
+                           keywords=list(keywords))
 
 
 @login_manager.user_loader

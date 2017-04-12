@@ -331,6 +331,14 @@ def all_keywords(engine):
         return con.execute(sql).fetchall()
 
 
+def song_keywords(engine, song_id):
+    sql = text('SELECT * '
+               'FROM keywords '
+               'WHERE song_id=:song_id;')
+    with engine.connect() as con:
+        return con.execute(sql, song_id=song_id).fetchall()
+
+
 def add_song_keyword(engine, song_id, keyword, weight):
     '''
     keyword_tupes:

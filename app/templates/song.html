@@ -6,6 +6,14 @@
     <p><b>Artist:</b> {{ song.artist }}</p>
     <p><b>Albumn:</b> {{ song.album if song.album else "Unknown" }}</p>
     <p><b>Lyrics:</b><br>{{ song.lyrics.replace('\n', '<br>')|safe }}</p>
+    {% if keywords|length > 0 %}
+    <p><b>Keywords:</b></p>
+      <ul>
+      {% for kw in keywords %}
+        <li>{{ kw.word }}</li>
+      {% endfor %}
+      <ul>
+    {% endif %}
   </div>
 </div>
 <div class="space"></div>
