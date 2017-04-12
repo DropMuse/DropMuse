@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS songs(
 CREATE TABLE IF NOT EXISTS playlist_entry(
     playlist_id BIGINT UNSIGNED NOT NULL,
     song_id BIGINT UNSIGNED NOT NULL,
-    position INT NOT NULL,
+    position BIGINT NOT NULL,
     FOREIGN KEY (playlist_id) REFERENCES playlists(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
@@ -58,19 +58,18 @@ CREATE TABLE IF NOT EXISTS playlist_entry(
 
 CREATE TABLE IF NOT EXISTS votes(
     playlist_id BIGINT UNSIGNED NOT NULL,
-    song_id BIGINT UNSIGNED NOT NULL,
-    user_id BIGINT UNSIGNED NOT NULL,
-    FOREIGN KEY (playlist_id) REFERENCES playlists(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    FOREIGN KEY (song_id) REFERENCES songs(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    position BIGINT NOT NULL,
+    FOREIGN KEY (playlist_id, position) REFERENCES playlist_entry(playlist_id, position)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS keywords(
+    song_id BIGINT UNSIGNED NOT NULL,
+    word VARCHAR(200),
+    weight DOUBLE,
     FOREIGN KEY (song_id) REFERENCES songs(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
+    PRIMARY KEY (song_id, word)
+);

@@ -8,6 +8,7 @@ from forms import RegistrationForm, LoginForm, PlaylistCreateForm
 from flask_paginate import Pagination
 import db_utils
 import utils
+import recommendation
 from .spotify import spotify_blueprint
 
 app = Flask(__name__)
@@ -55,7 +56,6 @@ def register():
                                  form.email.data)
             flash('Thanks for registering', 'success')
             return redirect(url_for('login'))
-    print form
     return render_template('register.html', form=form)
 
 
@@ -118,6 +118,22 @@ def playlist_create():
                                  form.title.data)
         return redirect(url_for('profile', username=current_user.username))
     return render_template('playlist_create.html', form=form)
+
+
+@app.route('/playlist/recommendations/<playlist_id>', methods=['GET', 'POST'])
+@login_required
+def playlist_recommendations(playlist_id):
+    playlist_id = int(playlist_id)
+    song_ids = recommendation.get_recommendations(engine, playlist_id)
+    playlist_existing = db_utils.playlist_songs(engine, playlist_id)
+    for p in playlist_existing:
+        if p.song_id in song_ids:
+            song_ids.remove(p.song_id)
+    song_ids = song_ids[:25]
+    songs = db_utils.song_details_many(engine, song_ids)
+    return render_template('playlist_recommendations.html',
+                           recommendations=list(songs),
+                           playlist_id=playlist_id)
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -196,7 +212,28 @@ def playlist_song_move():
                                    old_position,
                                    new_position,
                                    playlist_id)
-    return jsonify("Removed successfully")
+    return jsonify("Moved successfully")
+
+
+@app.route('/playlist/set_vote', methods=['POST'])
+@login_required
+def playlist_set_vote():
+    data = request.json
+    position = data['position']
+    vote_status = data['status']
+    playlist_id = data['playlist_id']
+
+    # Authenticate user
+    details = db_utils.playlist_details(engine, playlist_id)
+    if (not details) or details.user_id != current_user.id:
+        flash('Not authorized to edit this playlist', 'danger')
+        return '', 403
+
+    if vote_status:
+        db_utils.create_vote(engine, playlist_id, position)
+    else:
+        db_utils.delete_vote(engine, playlist_id, position)
+    return jsonify("Vote changed successfully")
 
 
 @app.route('/profile/remove_playlist', methods=['POST'])
@@ -237,7 +274,10 @@ def playlist_edit():
 @login_required
 def song_info(song_id):
     song = db_utils.song_by_id(engine, song_id)
-    return render_template('song.html', song=song)
+    keywords = db_utils.song_keywords(engine, song_id)
+    return render_template('song.html',
+                           song=song,
+                           keywords=list(keywords))
 
 
 @login_manager.user_loader

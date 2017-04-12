@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if recommendations|length > 0 %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Artist</th>
+      <th>Album</th>
+      <th>Duration</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for song in recommendations %}
+    <tr class="ui-state-default">
+      <td>{{song.title}}</td>
+      <td>{{song.artist}}</td>
+      <td>{{song.album}}</td>
+      <td>{{ format_duration(song.duration) }}</td>
+      <td><a class="btn btn-default btn-sm" href="{{ url_for('song_info', song_id=song.id) }}"><span class="glyphicon glyphicon-info-sign"></span></a></td>
+      <td>
+      {% if song.external_url != None %}
+        <a class="btn btn-sm btn-primary" href="{{ song.external_url }}" target="#"><span class="glyphicon glyphicon-play"></span></a>
+      {% endif %}
+      </td>
+      <td><a class="btn btn-default btn-sm" onclick="addSongToPlaylist({{song.id}}, this)"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<script>
+function addSongToPlaylist(songId, elem) {
+  if($(elem).hasClass('added'))
+    return;
+  $.ajax({
+    type: "POST",
+    url: "{{ url_for('playlist_song_add') }}",
+    data: JSON.stringify({
+      song_id: songId,
+      playlist_id: {{ playlist_id }}
+    }),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function() {
+      $(elem).addClass('added');
+      $(elem).find('span').removeClass('glyphicon-plus-sign');
+      $(elem).find('span').addClass('glyphicon-ok');
+    }
+  });
+}
+
+function flashSuccess(message) {
+  console.log('appending');
+  $('#flashed_messages').append(
+        '<div class="alert alert-success">' +
+            '<button type="button" class="close" data-dismiss="alert">' +
+            '&times;</button>' + message + '</div>');
+}
+</script>
+{% else %}
+<p style="padding-top: 16px;">Could not find any songs to recommend for this playlist.</p>
+{% endif %}
+{% endblock %}

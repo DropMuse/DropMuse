@@ -180,13 +180,16 @@ def remove_playlist_from_user(engine, user_id, playlist_id):
 
 def playlist_songs(engine, playlist_id):
     # ADVANCED
-    sqlforplaylistsongs = text('SELECT * FROM songs '
-                               'JOIN playlist_entry '
-                               'ON songs.id=playlist_entry.song_id '
-                               'WHERE playlist_entry.playlist_id=:playlist_id '
-                               'ORDER BY playlist_entry.position')
+    sql = text('SELECT *, votes.position AS vposition FROM songs '
+               'JOIN playlist_entry '
+               'ON songs.id=playlist_entry.song_id '
+               'LEFT JOIN votes '
+               'ON playlist_entry.position=votes.position '
+               'AND playlist_entry.playlist_id=votes.playlist_id '
+               'WHERE playlist_entry.playlist_id=:playlist_id '
+               'ORDER BY playlist_entry.position')
     with engine.connect() as con:
-        return con.execute(sqlforplaylistsongs, playlist_id=playlist_id)
+        return con.execute(sql, playlist_id=playlist_id)
 
 
 def playlist_details(engine, playlist_id):
@@ -254,11 +257,34 @@ def playlist_max_id(engine):
         return con.execute(sql).fetchone()[0]
 
 
-def get_playlist_entries(engine):
-    sql = text('SELECT playlist_id, song_id '
-               'FROM playlist_entry;')
+def get_playlist_interactions(engine):
+    '''
+    Returns playlist entries joined with their votes
+    '''
+    sql = text('SELECT playlist_entry.playlist_id AS playlist_id, '
+               '       votes.position AS vote, '
+               '       playlist_entry.song_id as song_id '
+               'FROM playlist_entry '
+               'LEFT JOIN votes '
+               'ON votes.playlist_id=playlist_entry.playlist_id '
+               'AND votes.position=playlist_entry.position;')
     with engine.connect() as con:
         return con.execute(sql)
+
+
+def create_vote(engine, playlist_id, position):
+    sql = text('INSERT IGNORE INTO votes(playlist_id, position) '
+               'VALUES (:playlist_id, :position)', autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql, playlist_id=playlist_id, position=position)
+
+
+def delete_vote(engine, playlist_id, position):
+    sql = text('DELETE FROM  votes '
+               'WHERE playlist_id=:playlist_id '
+               'AND position=:position', autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql, playlist_id=playlist_id, position=position)
 
 
 def song_sentiments(engine):
@@ -266,6 +292,61 @@ def song_sentiments(engine):
                'FROM songs;')
     with engine.connect() as con:
         results = con.execute(sql).fetchall()
-        print results[0][0]
         results = [json.loads(r[0]) for r in results]
         return results
+
+
+def song_details_many(engine, song_ids):
+    sql = text('SELECT * '
+               'FROM songs '
+               'WHERE id IN :song_ids')
+    with engine.connect() as con:
+        results = list(con.execute(sql, song_ids=song_ids).fetchall())
+        ordered = []
+        for i in song_ids:
+            try:
+                ordered.append(next(res for res in results if res.id == i))
+            except StopIteration:
+                print("Couldn't add song {} to song details".format(i))
+        return ordered
+
+
+def song_lyrics(engine):
+    sql = text('SELECT id, lyrics '
+               'FROM songs;')
+    with engine.connect() as con:
+        return con.execute(sql).fetchall()
+
+
+def delete_all_keywords(engine):
+    sql = text('DELETE FROM keywords;', autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql)
+
+
+def all_keywords(engine):
+    sql = text('SELECT * '
+               'FROM keywords;')
+    with engine.connect() as con:
+        return con.execute(sql).fetchall()
+
+
+def song_keywords(engine, song_id):
+    sql = text('SELECT * '
+               'FROM keywords '
+               'WHERE song_id=:song_id;')
+    with engine.connect() as con:
+        return con.execute(sql, song_id=song_id).fetchall()
+
+
+def add_song_keyword(engine, song_id, keyword, weight):
+    '''
+    keyword_tupes:
+        in form (keyword, weight)
+    '''
+    sql = text('INSERT INTO keywords(song_id, word, weight)'
+               'VALUES (:song_id, :keyword, :weight) '
+               'ON DUPLICATE KEY UPDATE weight=:weight;',
+               autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql, song_id=song_id, keyword=keyword, weight=weight)

@@ -90,3 +90,4 @@ ENV/
 
 # Pycharm
 .idea
+lightfm_model.pickle
