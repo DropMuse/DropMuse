@@ -124,10 +124,16 @@ def playlist_create():
 @login_required
 def playlist_recommendations(playlist_id):
     playlist_id = int(playlist_id)
-    song_ids = recommendation.get_recommendations(engine, playlist_id)[:25]
+    song_ids = recommendation.get_recommendations(engine, playlist_id)
+    playlist_existing = db_utils.playlist_songs(engine, playlist_id)
+    for p in playlist_existing:
+        if p.song_id in song_ids:
+            song_ids.remove(p.song_id)
+    song_ids = song_ids[:25]
     songs = db_utils.song_details_many(engine, song_ids)
     return render_template('playlist_recommendations.html',
-                           recommendations=list(songs))
+                           recommendations=list(songs),
+                           playlist_id=playlist_id)
 
 
 @app.route('/search', methods=['GET', 'POST'])

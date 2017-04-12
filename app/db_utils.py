@@ -304,7 +304,10 @@ def song_details_many(engine, song_ids):
         results = list(con.execute(sql, song_ids=song_ids).fetchall())
         ordered = []
         for i in song_ids:
-            ordered.append(next(res for res in results if res.id == i))
+            try:
+                ordered.append(next(res for res in results if res.id == i))
+            except StopIteration:
+                print("Couldn't add song {} to song details".format(i))
         return ordered
 
 

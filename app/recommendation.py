@@ -13,7 +13,7 @@ MODEL_LOCATION = 'lightfm_model.pickle'
 def get_interactions(engine):
     num_playlists = db_utils.playlist_max_id(engine)
     num_songs = db_utils.song_max_id(engine)
-    interactions = scipy.sparse.csr_matrix((num_playlists+1, num_songs+1))
+    interactions = scipy.sparse.lil_matrix((num_playlists+1, num_songs+1))
     plist_records = db_utils.get_playlist_interactions(engine)
     for r in plist_records:
         interaction_value = 2 if r.vote else 1
@@ -24,11 +24,12 @@ def get_interactions(engine):
 def get_item_features(engine):
     sentiments = db_utils.song_sentiments(engine)
     num_songs = db_utils.song_max_id(engine)
-    item_features = scipy.sparse.csr_matrix((num_songs+1, 3))
+    item_features = scipy.sparse.lil_matrix((num_songs+1, 3))
     for idx, s in enumerate(sentiments):
         item_features[idx] = np.array([s['pos'], s['neu'], s['neg']])
     keywords = keyword_sparse_matrix(engine)
-    return scipy.sparse.hstack([item_features, keywords])
+    results = scipy.sparse.hstack([item_features, keywords])
+    return results
 
 
 def train_model(engine):
@@ -71,7 +72,7 @@ def keyword_sparse_matrix(engine):
             keyword_dict[k.word] = curr_idx
             curr_idx += 1
     num_songs = db_utils.song_max_id(engine)
-    keyword_mat = scipy.sparse.csr_matrix((num_songs + 1, curr_idx + 1))
+    keyword_mat = scipy.sparse.lil_matrix((num_songs + 1, curr_idx + 1))
     for k in keyword_list:
         keyword_mat[k.song_id, keyword_dict[k.word]] = k.weight
     return keyword_mat
