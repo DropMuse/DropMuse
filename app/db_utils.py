@@ -315,6 +315,19 @@ def song_lyrics(engine):
         return con.execute(sql).fetchall()
 
 
+def delete_all_keywords(engine):
+    sql = text('DELETE FROM keywords;', autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql)
+
+
+def all_keywords(engine):
+    sql = text('SELECT * '
+               'FROM keywords;')
+    with engine.connect() as con:
+        return con.execute(sql).fetchall()
+
+
 def add_song_keyword(engine, song_id, keyword, weight):
     '''
     keyword_tupes:

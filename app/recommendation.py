@@ -27,7 +27,8 @@ def get_item_features(engine):
     item_features = scipy.sparse.csr_matrix((num_songs+1, 3))
     for idx, s in enumerate(sentiments):
         item_features[idx] = np.array([s['pos'], s['neu'], s['neg']])
-    return item_features
+    keywords = keyword_sparse_matrix(engine)
+    return scipy.sparse.hstack([item_features, keywords])
 
 
 def train_model(engine):
@@ -61,6 +62,21 @@ def get_recommendations(engine, playlist_id):
     return [int(i) for i in np.argsort(-predictions)]
 
 
+def keyword_sparse_matrix(engine):
+    keyword_list = list(db_utils.all_keywords(engine))
+    keyword_dict = {}
+    curr_idx = 0
+    for k in keyword_list:
+        if k.word not in keyword_dict:
+            keyword_dict[k.word] = curr_idx
+            curr_idx += 1
+    num_songs = db_utils.song_max_id(engine)
+    keyword_mat = scipy.sparse.csr_matrix((num_songs + 1, curr_idx + 1))
+    for k in keyword_list:
+        keyword_mat[k.song_id, keyword_dict[k.word]] = k.weight
+    return keyword_mat
+
+
 def load_model():
     '''
     Loads LightFM model from file
@@ -82,7 +98,8 @@ def dump_model(model):
         pickle.dump(model, f)
 
 
-def extract_keywords():
+def extract_keywords(engine):
+    db_utils.delete_all_keywords(engine)
     songs = db_utils.song_lyrics(engine)
     song_indices = {i: s.id for i, s in enumerate(songs)}
     lyrics = [s.lyrics for s in songs]
@@ -92,8 +109,8 @@ def extract_keywords():
     features = tfidf.get_feature_names()
     keywords = {}
     for idx, l in enumerate(tfidf_mat):
-        keywords[song_indices[idx]] = [(features[x], l[x]) for x in (-l).argsort()][:10]
+        k_idx = song_indices[idx]
+        keywords[k_idx] = [(features[x], l[x]) for x in (-l).argsort()][:10]
     for songid, word_arr in keywords.items():
-        print "inserting: %s" % songid
         for kw in word_arr:
             db_utils.add_song_keyword(engine, songid, kw[0], float(kw[1]))
