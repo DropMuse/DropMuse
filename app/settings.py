@@ -6,9 +6,8 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 ''' Generic Settings '''
-port = os.environ.get('PORT', 5000)
-server_host = os.environ.get('SERVER_HOST', 'localhost')
-SERVER_NAME = '{}:{}'.format(server_host, port)
+PORT = int(os.environ.get('PORT', 5000))
+SERVER_NAME = os.environ.get('SERVER_NAME', '0.0.0.0:{}'.format(PORT))
 SECRET_KEY = os.environ.get('SECRET_KEY', 'CHANGEME')
 SERVER_ENV = os.environ.get('SERVER_ENV', 'dev').lower()
 

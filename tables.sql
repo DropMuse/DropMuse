@@ -35,6 +35,10 @@ CREATE TABLE IF NOT EXISTS songs(
     lyrics TEXT,
     external_url varchar(200),
     sentiment TEXT,
+    pos REAL,
+    neu REAL,
+    neg REAL,
+    compound REAL,
     duration INT,
     PRIMARY KEY (id)
 );
@@ -64,6 +68,8 @@ CREATE TABLE IF NOT EXISTS keywords(
     song_id BIGINT UNSIGNED NOT NULL,
     word VARCHAR(200),
     weight DOUBLE,
-    FOREIGN KEY (song_id) REFERENCES songs(id),
+    FOREIGN KEY (song_id) REFERENCES songs(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     PRIMARY KEY (song_id, word)
 );
