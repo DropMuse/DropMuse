@@ -28,7 +28,7 @@ class User(UserMixin):
             db_utils.spotify_credentials_upsert(app.engine,
                                                 self.id,
                                                 self._spotify)
-        return spotipy.Spotify(auth=self._spotify)
+        return spotipy.Spotify(auth=self._spotify['access_token'])
 
 
 class Playlist(object):
