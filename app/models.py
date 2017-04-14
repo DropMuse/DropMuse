@@ -25,10 +25,13 @@ class User(UserMixin):
         # Refresh tokens if nescessary
         if oa_client.is_token_expired(self._spotify):
             self._spotify = oa_client.refresh_access_token(self._spotify)
+
+        # Save/return new credentials if possible
+        if self._spotify:
             db_utils.spotify_credentials_upsert(app.engine,
                                                 self.id,
                                                 self._spotify)
-        return spotipy.Spotify(auth=self._spotify['access_token'])
+            return spotipy.Spotify(auth=self._spotify['access_token'])
 
 
 class Playlist(object):
