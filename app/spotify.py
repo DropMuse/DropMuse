@@ -46,6 +46,7 @@ def disconnect():
     current_user._spotify = None
     return redirect(url_for('profile', username=current_user.username))
 
+
 def get_spotify_playlists():
     user_spotify = current_user.spotify
     playlists = user_spotify.current_user_playlists()

@@ -11,6 +11,7 @@ def user_exists(engine, user):
         res = con.execute(sql, user=user).fetchone()
         return res[0] != 0
 
+
 def create_user(engine, user, password, email):
     ''' Creates a user with the given information; saves a hashed password '''
     sql = text('INSERT INTO users (username, password_hash, email)'
@@ -326,12 +327,10 @@ def delete_vote(engine, playlist_id, position):
 
 
 def song_sentiments(engine):
-    sql = text('SELECT sentiment '
+    sql = text('SELECT pos, neg, neu '
                'FROM songs;')
     with engine.connect() as con:
-        results = con.execute(sql).fetchall()
-        results = [json.loads(r[0]) for r in results]
-        return results
+        return con.execute(sql).fetchall()
 
 
 def song_details_many(engine, song_ids):
