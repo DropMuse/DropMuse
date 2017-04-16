@@ -12,7 +12,9 @@
 <hr>
 <h4>Playlists</h4>
 <a href="{{url_for('playlist_create')}}" class="btn btn-default">New Playlist <span class="glyphicon glyphicon-plus-sign"></span></a>
-<a href="#" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
+{% if user.spotify %}
+<a href="{{url_for('import_playlists')}}" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
+{% endif %}
 <table class="table" id="playlist-table" width="100%" cellspacing="0">
   <thead>
     <tr>
@@ -58,6 +60,17 @@ function removePlaylistFromUser(userId, playlistId, userName) {
 </script>
 
 {% else %}
+{% if user.spotify %}
+<a href="{{url_for('spotify.disconnect')}}" class="btn btn-default">Disconnect Spotify Account <i class="fa fa-spotify"></i></a>
+<hr>
+<a href="{{url_for('import_playlists')}}" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
+<hr>
+{% else %}
+<a href="{{url_for('spotify.start_authentication')}}" class="btn btn-default">Connect to Spotify <i class="fa fa-spotify"></i></a>
+<hr>
+{% endif %}
+
+
 <p>You have no playlists. Want to <a href="{{ url_for('playlist_create') }}">create</a> one?</p>
 {% endif %}
 {% endblock %}
