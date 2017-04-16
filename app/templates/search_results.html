@@ -11,6 +11,7 @@
       <th>Artist</th>
       <th></th>
       <th></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -18,6 +19,11 @@
       <tr>
         <td>{{ song.title }}</td>
         <td>{{ song.artist }}</td>
+        <td>
+        {% if song.preview_url != None %}
+          <a class="btn btn-sm btn-primary" onclick="togglePlay(this)"><audio src="{{ song.preview_url }}" onended="handleAudioEnd(this)" onpause="handleAudioEnd(this)"></audio><span class="glyphicon glyphicon-play"></span></a>
+        {% endif %}
+        </td>
         <td><a class="btn btn-default btn-sm" href="{{ url_for('song_info', song_id=song.id) }}"><span class="glyphicon glyphicon-info-sign"></span></a></td>
         <td>
           <div class="btn-group">
@@ -35,6 +41,7 @@
     {% endfor %}
   </tbody>
 </table>
+{% include "_audio_helper.html" %}
 <script>
 function addSongToPlaylist(songId, playlistId, songTitle, playlistTitle, elem) {
   if($(elem).hasClass('added'))

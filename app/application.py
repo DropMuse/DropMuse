@@ -9,7 +9,7 @@ from flask_paginate import Pagination
 import db_utils
 import utils
 import recommendation
-from .spotify import spotify_blueprint
+from .spotify import spotify_blueprint, get_spotify_playlists
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -25,7 +25,7 @@ login_manager.login_message = 'You must be logged in to see this page.'
 login_manager.login_message_category = 'warning'
 
 print("Connecting to {}".format(DB_URL))
-engine = create_engine(DB_URL)
+engine = create_engine(DB_URL, encoding='utf-8')
 
 app.jinja_env.globals.update(format_duration=utils.format_duration)
 
@@ -175,6 +175,46 @@ def playlist_song_add():
 
     db_utils.add_song_to_playlist(engine, song_id, playlist_id)
     return jsonify("Added successfully")
+
+
+@app.route('/playlist/import_playlists', methods=['GET'])
+@login_required
+def import_playlists():
+    playlists = get_spotify_playlists()
+    user_spotify = current_user.spotify
+    for playlist in playlists['items']:
+        if playlist['owner']['id'] == user_spotify.current_user()['id']:
+            # insert playlist into database
+            db_utils.create_playlist(engine, current_user.id, playlist['name'])
+            user_id = user_spotify.current_user()['id']
+            results = current_user.spotify.user_playlist(user_id,
+                                                         playlist['id'],
+                                                         fields="tracks")
+            tracks = results['tracks']
+            curr_playlist_id = db_utils.get_playlist_id(engine,
+                                                        playlist['name'],
+                                                        current_user.id)
+
+            for i, item in enumerate(tracks['items']):
+                track = item['track']
+                trackname = track['name']
+                trackalbum = track['album']['name']
+                trackexternalurl = track['external_urls'].get('spotify')
+                trackartist = track['artists'][0]['name']
+                trackduration = track.get('duration_ms', 0) / 1000
+                trackpreview = track.get('preview_url')
+
+                # insert song into database
+                db_utils.create_song(engine, trackname, trackartist,
+                                     trackalbum, trackexternalurl,
+                                     trackduration, trackpreview)
+                curr_song_id = db_utils.get_song_id(engine, trackname,
+                                                    trackartist)
+
+                # insert song into playlist.
+                db_utils.add_song_to_playlist(engine, curr_song_id[0],
+                                              curr_playlist_id[0])
+    return redirect(url_for('profile', username=current_user.username))
 
 
 @app.route('/playlist/remove_song', methods=['POST'])

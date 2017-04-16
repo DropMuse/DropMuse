@@ -5,7 +5,9 @@
     <h2>{{ song.title }}</h2>
     <p><b>Artist:</b> {{ song.artist }}</p>
     <p><b>Album:</b> {{ song.album if song.album else "Unknown" }}</p>
+    {% if song.lyrics %}
     <p><b>Lyrics:</b><br>{{ song.lyrics.replace('\n', '<br>')|safe }}</p>
+    {% endif %}
     {% if keywords|length > 0 %}
     <p><b>Keywords:</b></p>
       <ul>

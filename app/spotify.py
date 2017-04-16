@@ -24,6 +24,7 @@ sp_oauth = oauth2.SpotifyOAuth(SPOTIFY_CLIENT_ID,
 @login_required
 def start_authentication():
     auth_url = sp_oauth.get_authorize_url()
+    print SERVER_NAME
     return redirect(auth_url)
 
 
@@ -44,3 +45,8 @@ def disconnect():
     db_utils.spotify_creds_delete(app.engine, current_user.id)
     current_user._spotify = None
     return redirect(url_for('profile', username=current_user.username))
+
+def get_spotify_playlists():
+    user_spotify = current_user.spotify
+    playlists = user_spotify.current_user_playlists()
+    return playlists
