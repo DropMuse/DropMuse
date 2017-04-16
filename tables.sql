@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS songs(
     album varchar(200),
     lyrics TEXT,
     external_url varchar(200),
+    preview_url varchar(200),
     sentiment TEXT,
     pos REAL,
     neu REAL,

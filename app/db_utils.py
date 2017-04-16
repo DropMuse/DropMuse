@@ -113,11 +113,14 @@ def add_song_to_playlist(engine, song_id, playlist_id):
         con.execute(sql, song_id=song_id, playlist_id=playlist_id)
 
 
-def create_song(engine, title, artist, album, external_url, duration):
+def create_song(engine, title, artist, album, external_url, duration,
+                preview_url):
     ''' Creates a song with the given information'''
     sql = text('INSERT INTO songs (title, artist, album, external_url, '
-               '                   duration) '
-               'SELECT :title, :artist, :album, :external_url, :duration FROM DUAL '
+               '                   duration, preview_url) '
+               'SELECT :title, :artist, :album, :external_url, :duration, '
+               '       :preview_url '
+               'FROM DUAL '
                'WHERE NOT EXISTS (SELECT 1 FROM songs WHERE title=:title '
                '                  AND artist=:artist '
                '                  AND album=:album '
@@ -125,7 +128,8 @@ def create_song(engine, title, artist, album, external_url, duration):
                autocommit=True)
     with engine.connect() as con:
         con.execute(sql, title=title, artist=artist, album=album,
-                    external_url=external_url, duration=duration)
+                    external_url=external_url, duration=duration,
+                    preview_url=preview_url)
 
 
 def remove_song_from_playlist(engine, position, playlist_id):

@@ -30,8 +30,8 @@
       <td>{{ format_duration(song.duration) }}</td>
       <td><a class="btn btn-default btn-sm" href="{{ url_for('song_info', song_id=song.id) }}"><span class="glyphicon glyphicon-info-sign"></span></a></td>
       <td>
-      {% if song.external_url != None %}
-        <a class="btn btn-sm btn-primary" href="{{ song.external_url }}" target="#"><span class="glyphicon glyphicon-play"></span></a>
+      {% if song.preview_url != None %}
+        <a class="btn btn-sm btn-primary" onclick="togglePlay(this)"><audio src="{{ song.preview_url }}" onended="handleAudioEnd(this)"></audio><span class="glyphicon glyphicon-play"></span></a>
       {% endif %}
       </td>
       <td>
@@ -42,11 +42,13 @@
     {% endfor %}
   </tbody>
 </table>
+{% include "_audio_helper.html" %}
 <script>
 $('table tbody').sortable({
   handle: ".handle",
   start: function(event, ui) {
     ui.item.startPos = ui.item.index();
+    handleAudioEnd(ui.item.find('audio').get(0));
   },
   stop: function(event, ui) {
     movePlaylistItem(ui.item.startPos, ui.item.index());

@@ -202,11 +202,12 @@ def import_playlists():
                 trackexternalurl = track['external_urls'].get('spotify')
                 trackartist = track['artists'][0]['name']
                 trackduration = track.get('duration_ms', 0) / 1000
+                trackpreview = track.get('preview_url')
 
                 # insert song into database
                 db_utils.create_song(engine, trackname, trackartist,
                                      trackalbum, trackexternalurl,
-                                     trackduration)
+                                     trackduration, trackpreview)
                 curr_song_id = db_utils.get_song_id(engine, trackname,
                                                     trackartist)
 

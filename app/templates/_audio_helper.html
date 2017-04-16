@@ -1,0 +1,18 @@
+<script>
+function togglePlay(el) {
+    // Pause all other audio
+    $('audio').each(function() { this.pause() });
+    var audio_el = $(el).children('audio');
+    $(el).toggleClass("playing")
+    $(el).hasClass("playing") ? audio_el[0].play() : audio_el[0].pause();
+    var ui_elem = $(el).find('span');
+    ui_elem.toggleClass("glyphicon-play");
+    ui_elem.toggleClass("glyphicon-pause");
+}
+function handleAudioEnd(el) {
+    var ui_elem = $(el).siblings('span');
+    ui_elem.addClass("glyphicon-play");
+    ui_elem.removeClass("glyphicon-pause");
+    $(el).get(0).pause();
+}
+</script>
