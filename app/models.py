@@ -24,7 +24,9 @@ class User(UserMixin):
             return None
         # Refresh tokens if nescessary
         if oa_client.is_token_expired(self._spotify):
-            self._spotify = oa_client.refresh_access_token(self._spotify)
+            print("Spotify token expired for {}.".format(self.username))
+            self._spotify = oa_client.refresh_access_token(
+                self._spotify.get('refresh_token'))
 
         # Save/return new credentials if possible
         if self._spotify:
