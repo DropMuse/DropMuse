@@ -105,7 +105,7 @@ def user_playlists(engine, username):
 def add_song_to_playlist(engine, song_id, playlist_id):
     ''' Adds song to the given playlist '''
     sql = text('INSERT INTO playlist_entry (song_id, playlist_id, position) '
-               'SELECT :song_id, :playlist_id, (IFNULL(MAX(position), 0) + 1)'
+               'SELECT :song_id, :playlist_id, (IFNULL(MAX(position), 0) + 1) '
                'FROM playlist_entry '
                'WHERE playlist_id=:playlist_id', autocommit=True)
 
