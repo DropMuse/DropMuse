@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
+<a class="btn btn-default" href="{{ url_for('playlist', playlist_id=playlist_id) }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+ Return to playlist</a>
 {% if recommendations|length > 0 %}
 <table class="table table-striped">
   <thead>
