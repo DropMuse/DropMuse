@@ -43,15 +43,15 @@ def get_user_by_id(engine, user_id):
         if res:
             return User(user_id, username=res[1])
 
+
 def create_playlist(engine, user_id, title):
     '''
     Creates a playlist in the given user's account
     '''
-    # sql = text('INSERT INTO playlists (title, user_id) '
-    #            'VALUES (:title, :user_id)', autocommit=True)
-    sql = text('INSERT INTO playlists (title, user_id)'
-               'SELECT  :title, :user_id FROM DUAL WHERE'
-               ' NOT EXISTS (SELECT 1 FROM playlists WHERE title=:title AND user_id=:user_id)', autocommit=True)
+    sql = text('INSERT INTO playlists (title, user_id) '
+               'SELECT :title, :user_id FROM DUAL WHERE '
+               'NOT EXISTS (SELECT 1 FROM playlists WHERE title=:title '
+               '            AND user_id=:user_id)', autocommit=True)
     with engine.connect() as con:
         con.execute(sql, user_id=user_id, title=title)
 
@@ -112,14 +112,20 @@ def add_song_to_playlist(engine, song_id, playlist_id):
     with engine.connect() as con:
         con.execute(sql, song_id=song_id, playlist_id=playlist_id)
 
-def create_song(engine, title, artist, album, external_url): #lyrics, duration
+
+def create_song(engine, title, artist, album, external_url, duration):
     ''' Creates a song with the given information'''
-    sql = text('INSERT INTO songs (title, artist, album, external_url)'
-               'SELECT  :title, :artist, :album, :external_url FROM DUAL '
+    sql = text('INSERT INTO songs (title, artist, album, external_url, '
+               '                   duration) '
+               'SELECT :title, :artist, :album, :external_url, :duration FROM DUAL '
                'WHERE NOT EXISTS (SELECT 1 FROM songs WHERE title=:title '
-               'AND artist=:artist AND album=:album AND external_url=:external_url)', autocommit=True)
+               '                  AND artist=:artist '
+               '                  AND album=:album '
+               '                  AND external_url=:external_url)',
+               autocommit=True)
     with engine.connect() as con:
-        con.execute(sql, title=title, artist=artist, album=album, external_url=external_url)
+        con.execute(sql, title=title, artist=artist, album=album,
+                    external_url=external_url, duration=duration)
 
 
 def remove_song_from_playlist(engine, position, playlist_id):
@@ -187,6 +193,7 @@ def remove_playlist_from_user(engine, user_id, playlist_id):
         con.execute(sql2, playlist_id=playlist_id)
         con.execute(sql, user_id=user_id, playlist_id=playlist_id)
 
+
 def playlist_songs(engine, playlist_id):
     # ADVANCED
     sql = text('SELECT *, votes.position AS vposition FROM songs '
@@ -200,19 +207,24 @@ def playlist_songs(engine, playlist_id):
     with engine.connect() as con:
         return con.execute(sql, playlist_id=playlist_id)
 
+
 def get_playlist_id(engine, playlist_name, uid):
     sql = text('SELECT id '
                'FROM playlists '
                'WHERE title=:playlist_name AND user_id=:uid')
     with engine.connect() as con:
-        return con.execute(sql, playlist_name=playlist_name, uid=uid).fetchone()
+        query = con.execute(sql, playlist_name=playlist_name, uid=uid)
+        return query.fetchone()
+
 
 def get_song_id(engine, trackname, trackartist):
     sql = text('SELECT id '
                'FROM songs '
                'WHERE title=:trackname AND artist=:trackartist')
     with engine.connect() as con:
-        return con.execute(sql, trackname=trackname, trackartist=trackartist).fetchone()
+        query = con.execute(sql, trackname=trackname, trackartist=trackartist)
+        return query.fetchone()
+
 
 def playlist_details(engine, playlist_id):
     sql = text('SELECT * '

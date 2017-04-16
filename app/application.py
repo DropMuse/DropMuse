@@ -184,25 +184,35 @@ def import_playlists():
     user_spotify = current_user.spotify
     for playlist in playlists['items']:
         if playlist['owner']['id'] == user_spotify.current_user()['id']:
-            #insert playlist into database
-            db_utils.create_playlist(engine,current_user.id,playlist['name'])
-            results = current_user.spotify.user_playlist(user_spotify.current_user()['id'], playlist['id'], fields="tracks")#fields="tracks,next"
+            # insert playlist into database
+            db_utils.create_playlist(engine, current_user.id, playlist['name'])
+            user_id = user_spotify.current_user()['id']
+            results = current_user.spotify.user_playlist(user_id,
+                                                         playlist['id'],
+                                                         fields="tracks")
             tracks = results['tracks']
-            curr_playlist_id = db_utils.get_playlist_id(engine, playlist['name'], current_user.id)
+            curr_playlist_id = db_utils.get_playlist_id(engine,
+                                                        playlist['name'],
+                                                        current_user.id)
 
             for i, item in enumerate(tracks['items']):
                 track = item['track']
                 trackname = track['name']
                 trackalbum = track['album']['name']
-                trackexternalurl = track['external_urls']['spotify']
+                trackexternalurl = track['external_urls'].get('spotify')
                 trackartist = track['artists'][0]['name']
+                trackduration = track.get('duration_ms', 0) / 1000
 
-                #insert song into database
-                db_utils.create_song(engine, trackname, trackartist, trackalbum, trackexternalurl)
-                curr_song_id = db_utils.get_song_id(engine, trackname, trackartist)
+                # insert song into database
+                db_utils.create_song(engine, trackname, trackartist,
+                                     trackalbum, trackexternalurl,
+                                     trackduration)
+                curr_song_id = db_utils.get_song_id(engine, trackname,
+                                                    trackartist)
 
-                #insert song into playlist.
-                db_utils.add_song_to_playlist(engine, curr_song_id[0], curr_playlist_id[0])
+                # insert song into playlist.
+                db_utils.add_song_to_playlist(engine, curr_song_id[0],
+                                              curr_playlist_id[0])
     return redirect(url_for('profile', username=current_user.username))
 
 
