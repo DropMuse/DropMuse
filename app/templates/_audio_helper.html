@@ -2,17 +2,28 @@
 function togglePlay(el) {
     // Pause all other audio
     $('audio').each(function() { this.pause() });
+
+    // Toggle audio playing
     var audio_el = $(el).children('audio');
-    $(el).toggleClass("playing")
-    $(el).hasClass("playing") ? audio_el[0].play() : audio_el[0].pause();
+    audio_el.toggleClass("playing")
+    audio_el.hasClass("playing") ? audio_el[0].play() : audio_el[0].pause();
+
+    // Update UI
     var ui_elem = $(el).find('span');
     ui_elem.toggleClass("glyphicon-play");
     ui_elem.toggleClass("glyphicon-pause");
 }
 function handleAudioEnd(el) {
+    // Do nothing if element not playing
+    if(!$(el).hasClass("playing")) {
+        return;
+    }
+    // Change UI
     var ui_elem = $(el).siblings('span');
     ui_elem.addClass("glyphicon-play");
     ui_elem.removeClass("glyphicon-pause");
+
+    // Pause audio, just to be sure
     $(el).get(0).pause();
 }
 </script>
