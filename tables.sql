@@ -35,10 +35,9 @@ CREATE TABLE IF NOT EXISTS songs(
     lyrics TEXT,
     external_url varchar(200),
     preview_url varchar(200),
-    sentiment TEXT,
-    pos REAL,
-    neu REAL,
-    neg REAL,
+    pos REAL NOT NULL DEFAULT 0,
+    neu REAL NOT NULL DEFAULT 0,
+    neg REAL NOT NULL DEFAULT 0,
     compound REAL,
     duration INT,
     PRIMARY KEY (id)

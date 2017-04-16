@@ -26,7 +26,7 @@ def get_item_features(engine):
     num_songs = db_utils.song_max_id(engine)
     item_features = scipy.sparse.lil_matrix((num_songs+1, 3))
     for idx, s in enumerate(sentiments):
-        item_features[idx] = np.array([s['pos'], s['neu'], s['neg']])
+        item_features[idx] = np.array([s.pos, s.neu, s.neg])
     keywords = keyword_sparse_matrix(engine)
     results = scipy.sparse.hstack([item_features, keywords])
     return results
