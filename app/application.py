@@ -211,7 +211,10 @@ def import_single_playlist(playlist_id):
                                                     playlist['name'],
                                                     current_user.id)
 
-        for i, item in enumerate(tracks['items']):
+        for item in tracks['items']:
+            # Skip local songs
+            if item['is_local']:
+                continue
             track = item['track']
             trackname = track['name']
             trackalbum = track['album']['name']
