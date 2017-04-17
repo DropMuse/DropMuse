@@ -51,3 +51,8 @@ def get_spotify_playlists():
     user_spotify = current_user.spotify
     playlists = user_spotify.current_user_playlists()
     return playlists
+
+def create_spotify_playlist(current_playlist_name,tracks_to_add):
+    user_spotify = current_user.spotify
+    created = user_spotify.user_playlist_create(user_spotify.me()['id'], current_playlist_name)
+    user_spotify.user_playlist_add_tracks(user_spotify.me()['id'], created['id'] ,tracks_to_add)

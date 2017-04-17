@@ -115,12 +115,12 @@ def add_song_to_playlist(engine, song_id, playlist_id):
 
 
 def create_song(engine, title, artist, album, external_url, duration,
-                preview_url):
+                preview_url, spotify_id):
     ''' Creates a song with the given information'''
     sql = text('INSERT INTO songs (title, artist, album, external_url, '
-               '                   duration, preview_url) '
+               '                   duration, preview_url, spotify_id) '
                'SELECT :title, :artist, :album, :external_url, :duration, '
-               '       :preview_url '
+               '       :preview_url , :spotify_id '
                'FROM DUAL '
                'WHERE NOT EXISTS (SELECT 1 FROM songs WHERE title=:title '
                '                  AND artist=:artist '
@@ -130,7 +130,7 @@ def create_song(engine, title, artist, album, external_url, duration,
     with engine.connect() as con:
         con.execute(sql, title=title, artist=artist, album=album,
                     external_url=external_url, duration=duration,
-                    preview_url=preview_url)
+                    preview_url=preview_url, spotify_id=spotify_id)
 
 
 def remove_song_from_playlist(engine, position, playlist_id):
@@ -221,6 +221,13 @@ def get_playlist_id(engine, playlist_name, uid):
         query = con.execute(sql, playlist_name=playlist_name, uid=uid)
         return query.fetchone()
 
+def get_playlist_name(engine, playlist_id):
+    sql = text('SELECT title '
+               'FROM playlists '
+               'WHERE id=:playlist_id')
+    with engine.connect() as con:
+        query = con.execute(sql, playlist_id=playlist_id)
+        return query.fetchone()
 
 def get_song_id(engine, trackname, trackartist):
     sql = text('SELECT id '
