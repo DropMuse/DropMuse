@@ -34,7 +34,7 @@
         <a class="btn btn-default btn-sm" href="{{url_for('playlist', playlist_id=playlist.id)}}">View <span class="glyphicon glyphicon-th-list"></a>
         <a onclick="removePlaylistFromUser({{user.id}}, {{playlist.id}},'{{user.username}}')" class="btn btn-default btn-sm">Delete <span class="glyphicon glyphicon-minus-sign"></span></a>
         {% if user.spotify %}
-        <a class="btn btn-default btn-sm">Export <i class="fa fa-spotify"></i></a>
+        <a onclick="exportSpofityPlaylist({{playlist.id}})" class="btn btn-default btn-sm">Export <i class="fa fa-spotify"></i></a>
         {% endif %}
       </td>
     </tr>
@@ -50,6 +50,20 @@ function removePlaylistFromUser(userId, playlistId, userName) {
     data: JSON.stringify({
       user_id: userId,
       playlist_id: playlistId
+    }),
+    contentType: "application/json",
+    dataType: 'json',
+  }).always(function() {
+    location.reload();
+  });
+}
+
+function exportSpofityPlaylist( playlistId) {
+  $.ajax({
+    type: "POST",
+    url: "{{url_for('playlist_export')}}",
+    data: JSON.stringify({
+      playlist_id: playlistId,
     }),
     contentType: "application/json",
     dataType: 'json',

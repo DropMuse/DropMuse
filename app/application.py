@@ -9,7 +9,7 @@ from flask_paginate import Pagination
 import db_utils
 import utils
 import recommendation
-from .spotify import spotify_blueprint, get_spotify_playlists
+from .spotify import spotify_blueprint, get_spotify_playlists, create_spotify_playlist
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -177,6 +177,23 @@ def playlist_song_add():
     return jsonify("Added successfully")
 
 
+@app.route('/playlist/export_playlist', methods=['POST'])
+@login_required
+def playlist_export():
+    data = request.json
+    playlist_id = data['playlist_id']
+
+    current_playlist_name = db_utils.get_playlist_name(engine, playlist_id)
+    playlist_existing = db_utils.playlist_songs(engine, playlist_id)
+    tracks_to_add = []
+    for p in playlist_existing:
+        if(p.spotify_id is not None):
+            tracks_to_add.append(p.spotify_id)
+
+
+    create_spotify_playlist(current_playlist_name[0],tracks_to_add)
+    return jsonify("Exported successfully")
+
 @app.route('/playlist/import_playlists', methods=['GET'])
 @login_required
 def import_playlists():
@@ -203,11 +220,12 @@ def import_playlists():
                 trackartist = track['artists'][0]['name']
                 trackduration = track.get('duration_ms', 0) / 1000
                 trackpreview = track.get('preview_url')
+                trackuri = track['uri']
 
                 # insert song into database
                 db_utils.create_song(engine, trackname, trackartist,
                                      trackalbum, trackexternalurl,
-                                     trackduration, trackpreview)
+                                     trackduration, trackpreview, trackuri)
                 curr_song_id = db_utils.get_song_id(engine, trackname,
                                                     trackartist)
 
