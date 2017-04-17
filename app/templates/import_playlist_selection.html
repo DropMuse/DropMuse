@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+<a class="btn btn-default" href="{{ url_for('profile', username=current_user.username) }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+ Return to profile</a>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Number of Songs</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for playlist in playlists %}
+    <tr class="ui-state-default">
+      <td>{{playlist.name}}</td>
+      <td>{{playlist.tracks.total}}</td>
+      <td><a class="btn btn-default" href="{{ url_for('import_single_playlist', playlist_id=playlist.id) }}"><i class="fa fa-cloud-download" aria-hidden="true"></i>
+</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

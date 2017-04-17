@@ -28,6 +28,7 @@ print("Connecting to {}".format(DB_URL))
 engine = create_engine(DB_URL, encoding='utf-8')
 
 app.jinja_env.globals.update(format_duration=utils.format_duration)
+app.jinja_env.filters.update(escapejs=utils.jinja2_escapejs_filter)
 
 
 @app.route('/')
@@ -190,48 +191,67 @@ def playlist_export():
         if(p.spotify_id is not None):
             tracks_to_add.append(p.spotify_id)
 
-
-    create_spotify_playlist(current_playlist_name[0],tracks_to_add)
+    create_spotify_playlist(current_playlist_name[0], tracks_to_add)
     return jsonify("Exported successfully")
+
 
 @app.route('/playlist/import_playlists', methods=['GET'])
 @login_required
 def import_playlists():
     playlists = get_spotify_playlists()
+    return render_template('import_playlist_selection.html',
+                           playlists=playlists['items'])
+
+
+@app.route('/playlist/import_playlists/<playlist_id>', methods=['GET'])
+@login_required
+def import_single_playlist(playlist_id):
+    playlists = get_spotify_playlists()
     user_spotify = current_user.spotify
-    for playlist in playlists['items']:
-        if playlist['owner']['id'] == user_spotify.current_user()['id']:
-            # insert playlist into database
-            db_utils.create_playlist(engine, current_user.id, playlist['name'])
-            user_id = user_spotify.current_user()['id']
-            results = current_user.spotify.user_playlist(user_id,
-                                                         playlist['id'],
-                                                         fields="tracks")
-            tracks = results['tracks']
-            curr_playlist_id = db_utils.get_playlist_id(engine,
-                                                        playlist['name'],
-                                                        current_user.id)
 
-            for i, item in enumerate(tracks['items']):
-                track = item['track']
-                trackname = track['name']
-                trackalbum = track['album']['name']
-                trackexternalurl = track['external_urls'].get('spotify')
-                trackartist = track['artists'][0]['name']
-                trackduration = track.get('duration_ms', 0) / 1000
-                trackpreview = track.get('preview_url')
-                trackuri = track['uri']
+    try:
+        playlist = next(p for p in playlists['items']
+                        if p['id'] == playlist_id)
+    except:
+        flash("Couldn't find playlist", "warning")
+        return redirect(url_for('profile', username=current_user.username))
 
-                # insert song into database
-                db_utils.create_song(engine, trackname, trackartist,
-                                     trackalbum, trackexternalurl,
-                                     trackduration, trackpreview, trackuri)
-                curr_song_id = db_utils.get_song_id(engine, trackname,
-                                                    trackartist)
+    if playlist['owner']['id'] == user_spotify.current_user()['id']:
+        # insert playlist into database
+        db_utils.create_playlist(engine, current_user.id, playlist['name'])
+        user_id = user_spotify.current_user()['id']
+        results = current_user.spotify.user_playlist(user_id,
+                                                     playlist['id'],
+                                                     fields="tracks")
+        tracks = results['tracks']
+        curr_playlist_id = db_utils.get_playlist_id(engine,
+                                                    playlist['name'],
+                                                    current_user.id)
 
-                # insert song into playlist.
-                db_utils.add_song_to_playlist(engine, curr_song_id[0],
-                                              curr_playlist_id[0])
+        for item in tracks['items']:
+            # Skip local songs
+            if item['is_local']:
+                continue
+            track = item['track']
+            trackname = track['name']
+            trackalbum = track['album']['name']
+            trackexternalurl = track['external_urls'].get('spotify')
+            trackartist = track['artists'][0]['name']
+            trackduration = track.get('duration_ms', 0) / 1000
+            trackpreview = track.get('preview_url')
+            trackuri = track['uri']
+
+            # insert song into database
+            db_utils.create_song(engine, trackname, trackartist,
+                                 trackalbum, trackexternalurl,
+                                 trackduration, trackpreview, trackuri)
+            curr_song_id = db_utils.get_song_id(engine, trackname,
+                                                trackartist)
+
+            # insert song into playlist.
+            db_utils.add_song_to_playlist(engine, curr_song_id[0],
+                                          curr_playlist_id[0])
+    flash("Imported playlist: {}".format(playlist['name']), 'success')
     return redirect(url_for('profile', username=current_user.username))
 
 
