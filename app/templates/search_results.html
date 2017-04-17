@@ -32,7 +32,7 @@
             </button>
             <ul class="dropdown-menu">
               {% for playlist in playlists %}
-                <li><a onclick="addSongToPlaylist({{song.id}}, {{playlist.id}}, '{{song.title}}', '{{playlist.title}}', this)">{{playlist.title}}</a></li>
+                <li><a onclick="addSongToPlaylist({{song.id}}, {{playlist.id}}, '{{song.title|escapejs}}', '{{playlist.title|escapejs}}', this)">{{playlist.title}}</a></li>
               {% endfor %}
             </ul>
           </div>
