@@ -1,6 +1,5 @@
 from flask import Blueprint, redirect, url_for, request
 from settings import (SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SERVER_NAME)
-# import spotipy
 from flask_login import current_user
 from flask_security import login_required
 from spotipy import oauth2
@@ -52,7 +51,11 @@ def get_spotify_playlists():
     playlists = user_spotify.current_user_playlists()
     return playlists
 
-def create_spotify_playlist(current_playlist_name,tracks_to_add):
+
+def create_spotify_playlist(current_playlist_name, tracks_to_add):
     user_spotify = current_user.spotify
-    created = user_spotify.user_playlist_create(user_spotify.me()['id'], current_playlist_name)
-    user_spotify.user_playlist_add_tracks(user_spotify.me()['id'], created['id'] ,tracks_to_add)
+    created = user_spotify.user_playlist_create(user_spotify.me()['id'],
+                                                current_playlist_name)
+    user_spotify.user_playlist_add_tracks(user_spotify.me()['id'],
+                                          created['id'],
+                                          tracks_to_add)

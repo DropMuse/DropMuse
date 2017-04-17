@@ -9,7 +9,8 @@ from flask_paginate import Pagination
 import db_utils
 import utils
 import recommendation
-from .spotify import spotify_blueprint, get_spotify_playlists, create_spotify_playlist
+from .spotify import (spotify_blueprint, get_spotify_playlists,
+                      create_spotify_playlist)
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY

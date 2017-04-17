@@ -221,6 +221,7 @@ def get_playlist_id(engine, playlist_name, uid):
         query = con.execute(sql, playlist_name=playlist_name, uid=uid)
         return query.fetchone()
 
+
 def get_playlist_name(engine, playlist_id):
     sql = text('SELECT title '
                'FROM playlists '
@@ -228,6 +229,7 @@ def get_playlist_name(engine, playlist_id):
     with engine.connect() as con:
         query = con.execute(sql, playlist_id=playlist_id)
         return query.fetchone()
+
 
 def get_song_id(engine, trackname, trackartist):
     sql = text('SELECT id '
