@@ -33,14 +33,17 @@ CREATE TABLE IF NOT EXISTS songs(
     artist varchar(200),
     album varchar(200),
     lyrics TEXT,
-    external_url varchar(200),
-    preview_url varchar(200),
+    song_url varchar(200),
     spotify_id VARCHAR(200),
     pos REAL NOT NULL DEFAULT 0,
     neu REAL NOT NULL DEFAULT 0,
     neg REAL NOT NULL DEFAULT 0,
     compound REAL,
     duration INT,
+    tempo FLOAT,
+    pitch FLOAT,
+    harmonic FLOAT,
+    percussive FLOAT,
     PRIMARY KEY (id)
 );
 
