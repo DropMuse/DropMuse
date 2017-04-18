@@ -258,6 +258,10 @@ def import_single_playlist(playlist_id):
             db_utils.add_song_to_playlist(engine, curr_song_id[0],
                                           curr_playlist_id[0])
     flash("Imported playlist: {}".format(playlist['name']), 'success')
+
+    # Update the database once we've imported new songs
+    scheduler.schedule_update()
+
     return redirect(url_for('profile', username=current_user.username))
 
 

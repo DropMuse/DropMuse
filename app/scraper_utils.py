@@ -8,7 +8,7 @@ def update_songs_table(engine):
     # Query songs that don't have sentiment or lyrics or audio analysis
     sql = text('SELECT id, artist, title, preview_url '
                'FROM songs '
-               'WHERE lyrics IS NULL OR pos IS NULL OR tempo IS NULL AND id > 3457;')
+               'WHERE lyrics IS NULL OR pos IS NULL OR tempo IS NULL;')
 
     con = engine.connect()
     result = con.execute(sql).fetchall()
