@@ -3,6 +3,10 @@ import librosa
 import urllib
 
 
+def audio_fingerprint(y):
+    return np.average(y ** 2) * 100
+
+
 def get_audio_analysis(song_url):
     if(song_url is None):
         return None, None, None, None
@@ -16,7 +20,7 @@ def get_audio_analysis(song_url):
     pitches, magnitudes = librosa.piptrack(y=y, sr=sr)
     pitch_ave = np.average(pitches)
 
-    harm = np.sum(librosa.effects.harmonic(y))
-    perc = np.sum(librosa.effects.percussive(y))
+    y_harm, y_per = librosa.effects.hpss(y)
+    harm, perc = audio_fingerprint(y_harm), audio_fingerprint(y_per)
 
     return float(tempo), float(pitch_ave), float(harm), float(perc)
