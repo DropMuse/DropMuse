@@ -11,6 +11,9 @@ import utils
 import recommendation
 from .spotify import (spotify_blueprint, get_spotify_playlists,
                       create_spotify_playlist)
+from scheduler import DropmuseScheduler
+import logging
+logging.basicConfig()
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -27,6 +30,8 @@ login_manager.login_message_category = 'warning'
 
 print("Connecting to {}".format(DB_URL))
 engine = create_engine(DB_URL, encoding='utf-8')
+
+scheduler = DropmuseScheduler(engine)
 
 app.jinja_env.globals.update(format_duration=utils.format_duration)
 app.jinja_env.filters.update(escapejs=utils.jinja2_escapejs_filter)
