@@ -3,6 +3,9 @@
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
     <h2>{{ song.title }}</h2>
+    {% if song.preview_url != None %}
+      <a class="btn btn-sm btn-primary pull-right" onclick="togglePlay(this)"><audio src="{{ song.preview_url }}" onended="handleAudioEnd(this)" onpause="handleAudioEnd(this)"></audio><span class="glyphicon glyphicon-play"></span></a>
+    {% endif %}
     <div class="btn-group pull-right">
       <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Add to Playlist <span class="glyphicon glyphicon-plus-sign"></span>
@@ -31,4 +34,5 @@
 <div class="space"></div>
 {% include "_flash_success.html" %}
 {% include "_add_song_to_playlist.html" %}
+{% include "_audio_helper.html" %}
 {% endblock %}

@@ -5,7 +5,7 @@ function togglePlay(el) {
 
     // Toggle audio playing
     var audio_el = $(el).children('audio');
-    audio_el.toggleClass("playing")
+    audio_el.toggleClass("playing");
     audio_el.hasClass("playing") ? audio_el[0].play() : audio_el[0].pause();
 
     // Update UI
@@ -18,6 +18,7 @@ function handleAudioEnd(el) {
     if(!$(el).hasClass("playing")) {
         return;
     }
+    $(el).removeClass("playing");
     // Change UI
     var ui_elem = $(el).siblings('span');
     ui_elem.addClass("glyphicon-play");
