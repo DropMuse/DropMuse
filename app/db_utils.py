@@ -342,6 +342,13 @@ def song_sentiments(engine):
         return con.execute(sql).fetchall()
 
 
+def song_artists(engine):
+    sql = text('SELECT id, artist '
+               'FROM songs;')
+    with engine.connect() as con:
+        return con.execute(sql).fetchall()
+
+
 def song_details_many(engine, song_ids):
     sql = text('SELECT * '
                'FROM songs '

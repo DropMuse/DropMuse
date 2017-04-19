@@ -22,6 +22,20 @@ def get_interactions(engine):
     return interactions
 
 
+def artist_matrix(engine):
+    '''
+    Returns matrix of shape (num_songs, num_artists)
+    '''
+    songs = db_utils.song_artists(engine)
+    num_songs = db_utils.song_max_id(engine)
+    artists = set(s.artist for s in songs)
+    artist_indices = {s: i for i, s in enumerate(artists)}
+    artist_mat = scipy.sparse.lil_matrix((num_songs+1, len(artists)))
+    for s in songs:
+        artist_mat[s.id, artist_indices[s.artist]] = 1
+    return artist_mat
+
+
 def get_item_features(engine):
     '''
     - Resultant matrix is of shape: (num_songs, num_features)
@@ -34,9 +48,13 @@ def get_item_features(engine):
         pos = s.pos or 0
         neu = s.neu or 0
         neg = s.neg or 0
-        item_features[s.id] = np.array([pos, neu, neg])
+        sent_arr = np.array([pos, neu, neg])
+        norm = la.norm(sent_arr)
+        if norm > 0:
+            item_features[s.id] = sent_arr / norm
     keywords = keyword_sparse_matrix(engine)
-    results = scipy.sparse.hstack([item_features, keywords])
+    artists = artist_matrix(engine)
+    results = scipy.sparse.hstack([item_features, keywords, artists])
     return results
 
 
@@ -83,6 +101,12 @@ def keyword_sparse_matrix(engine):
     keyword_mat = scipy.sparse.lil_matrix((num_songs + 1, curr_idx + 1))
     for k in keyword_list:
         keyword_mat[k.song_id, keyword_dict[k.word]] = k.weight
+
+    # Normalize rows
+    for r in range(keyword_mat.shape[0]):
+        norm = la.norm(keyword_mat.getrow(r).todense())
+        if norm > 0:
+            keyword_mat[r] = keyword_mat.getrow(r) / norm
     return keyword_mat
 
 
@@ -146,4 +170,5 @@ def similar_songs(engine, song_id, num_results=5):
         norm = sample_norm * la.norm(test_v)
         cos_diffs.append(np.dot(sample_v, test_v) / norm if norm != 0 else 0)
     most_similar = np.argsort(-np.array(cos_diffs))
-    return [int(i) for i in most_similar if i != song_id][:5]
+    similar_ids = [int(i) for i in most_similar if i != song_id][:5]
+    return similar_ids
