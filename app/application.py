@@ -11,6 +11,9 @@ import utils
 import recommendation
 from .spotify import (spotify_blueprint, get_spotify_playlists,
                       create_spotify_playlist)
+from scheduler import DropmuseScheduler
+import logging
+logging.basicConfig()
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -27,6 +30,8 @@ login_manager.login_message_category = 'warning'
 
 print("Connecting to {}".format(DB_URL))
 engine = create_engine(DB_URL, encoding='utf-8')
+
+scheduler = DropmuseScheduler(engine)
 
 app.jinja_env.globals.update(format_duration=utils.format_duration)
 app.jinja_env.filters.update(escapejs=utils.jinja2_escapejs_filter)
@@ -253,6 +258,10 @@ def import_single_playlist(playlist_id):
             db_utils.add_song_to_playlist(engine, curr_song_id[0],
                                           curr_playlist_id[0])
     flash("Imported playlist: {}".format(playlist['name']), 'success')
+
+    # Update the database once we've imported new songs
+    scheduler.schedule_update()
+
     return redirect(url_for('profile', username=current_user.username))
 
 

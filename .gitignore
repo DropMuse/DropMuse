@@ -91,3 +91,4 @@ ENV/
 # Pycharm
 .idea
 lightfm_model.pickle
+current.mp3
