@@ -31,7 +31,7 @@
       <td><a class="btn btn-default btn-sm" href="{{ url_for('song_info', song_id=song.id) }}"><span class="glyphicon glyphicon-info-sign"></span></a></td>
       <td>
       {% if song.preview_url != None %}
-        <a class="btn btn-sm btn-primary" onclick="togglePlay(this)"><audio src="{{ song.preview_url }}" onended="handleAudioEnd(this)" onpause="handleAudioEnd(this)"></audio><span class="glyphicon glyphicon-play"></span></a>
+        <a class="btn btn-sm btn-primary" onclick="togglePlay(this)"><audio src="{{ song.preview_url }}" onended="handleAudioEnd(this)" onpause="handleAudioEnd(this)" preload="{{ 'none' if entries|length > 100 else 'auto' }}"></audio><span class="glyphicon glyphicon-play"></span></a>
       {% endif %}
       </td>
       <td>

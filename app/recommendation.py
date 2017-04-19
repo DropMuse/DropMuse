@@ -3,6 +3,7 @@ import pickle
 import db_utils
 import scipy
 import numpy as np
+import numpy.linalg as la
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 NUM_COMPONENTS = 30
@@ -22,14 +23,18 @@ def get_interactions(engine):
 
 
 def get_item_features(engine):
+    '''
+    - Resultant matrix is of shape: (num_songs, num_features)
+    - Matrix can be indexed as (song_id, feature_idx)
+    '''
     sentiments = db_utils.song_sentiments(engine)
     num_songs = db_utils.song_max_id(engine)
     item_features = scipy.sparse.lil_matrix((num_songs+1, 3))
-    for idx, s in enumerate(sentiments):
+    for s in sentiments:
         pos = s.pos or 0
         neu = s.neu or 0
         neg = s.neg or 0
-        item_features[idx] = np.array([pos, neu, neg])
+        item_features[s.id] = np.array([pos, neu, neg])
     keywords = keyword_sparse_matrix(engine)
     results = scipy.sparse.hstack([item_features, keywords])
     return results
@@ -103,6 +108,11 @@ def dump_model(model):
 
 
 def extract_keywords(engine):
+    '''
+    - Constructs a TFIDF of all lyrics of all songs
+    - Extracts the most meaningful keywords of each song
+    - Updates the keyword table accordingly
+    '''
     songs = db_utils.song_lyrics(engine)
     song_indices = {i: s.id for i, s in enumerate(songs)}
     lyrics = [s.lyrics if s.lyrics else "" for s in songs]
@@ -121,3 +131,19 @@ def extract_keywords(engine):
             if kw[1] == 0:
                 continue
             db_utils.add_song_keyword(engine, songid, kw[0], float(kw[1]))
+
+
+def similar_songs(engine, song_id, num_results=5):
+    '''
+    - Returns song most similar to the given song using cosine similarity
+    '''
+    features = get_item_features(engine)
+    sample_v = np.array(features.getrow(song_id).todense())
+    sample_norm = la.norm(sample_v)
+    cos_diffs = []
+    for i in range(features.shape[0]):
+        test_v = features.getrow(i).todense().T
+        norm = sample_norm * la.norm(test_v)
+        cos_diffs.append(np.dot(sample_v, test_v) / norm if norm != 0 else 0)
+    most_similar = np.argsort(-np.array(cos_diffs))
+    return [int(i) for i in most_similar if i != song_id][:5]

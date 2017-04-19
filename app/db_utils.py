@@ -336,7 +336,7 @@ def delete_vote(engine, playlist_id, position):
 
 
 def song_sentiments(engine):
-    sql = text('SELECT pos, neg, neu '
+    sql = text('SELECT id, pos, neg, neu '
                'FROM songs;')
     with engine.connect() as con:
         return con.execute(sql).fetchall()
@@ -353,7 +353,7 @@ def song_details_many(engine, song_ids):
             try:
                 ordered.append(next(res for res in results if res.id == i))
             except StopIteration:
-                print("Couldn't add song {} to song details".format(i))
+                print("Couldn't find song {}'s details".format(i))
         return ordered
 
 

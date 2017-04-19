@@ -27,7 +27,15 @@
       {% for kw in keywords %}
         <li>{{ kw.word }}</li>
       {% endfor %}
+      </ul>
+    {% endif %}
+    {% if similar|length > 0 %}
+    <p><b>Similar Songs:</b></p>
       <ul>
+      {% for sim in similar %}
+        <li><a href="{{url_for('song_info', song_id=sim.id)}}">{{ sim.title }}</a></li>
+      {% endfor %}
+      </ul>
     {% endif %}
   </div>
 </div>

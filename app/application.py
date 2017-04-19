@@ -37,6 +37,12 @@ app.jinja_env.globals.update(format_duration=utils.format_duration)
 app.jinja_env.filters.update(escapejs=utils.jinja2_escapejs_filter)
 
 
+@app.before_first_request
+def setup():
+    if SERVER_ENV != 'dev':
+        scheduler.schedule_update()
+
+
 @app.route('/')
 def index():
     if current_user.is_authenticated:
@@ -331,10 +337,13 @@ def song_info(song_id):
     song = db_utils.song_by_id(engine, song_id)
     keywords = db_utils.song_keywords(engine, song_id)
     playlists = db_utils.user_playlists(engine, current_user.username)
+    similar_ids = recommendation.similar_songs(engine, int(song_id))
+    similar = db_utils.song_details_many(engine, similar_ids)
     return render_template('song.html',
                            song=song,
                            keywords=list(keywords),
-                           playlists=list(playlists))
+                           playlists=list(playlists),
+                           similar=similar)
 
 
 @login_manager.user_loader
