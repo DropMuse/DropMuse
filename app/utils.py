@@ -40,4 +40,4 @@ def jinja2_escapejs_filter(value):
         else:
             retval.append(letter)
 
-            return jinja2.Markup("".join(retval))
+    return jinja2.Markup("".join(retval))
