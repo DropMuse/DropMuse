@@ -227,15 +227,20 @@ def import_single_playlist(playlist_id):
         # insert playlist into database
         db_utils.create_playlist(engine, current_user.id, playlist['name'])
         user_id = user_spotify.current_user()['id']
-        results = current_user.spotify.user_playlist(user_id,
-                                                     playlist['id'],
-                                                     fields="tracks")
-        tracks = results['tracks']
+        results = user_spotify.user_playlist_tracks(user_id,
+                                                     playlist['id'])
+        tracks = results['items']
+
+        while results['next']:
+            results = user_spotify.next(results)
+            tracks.extend(results['items'])
+
         curr_playlist_id = db_utils.get_playlist_id(engine,
                                                     playlist['name'],
                                                     current_user.id)
+        #print (tracks[0])
 
-        for item in tracks['items']:
+        for item in tracks:
             # Skip local songs
             if item['is_local']:
                 continue
