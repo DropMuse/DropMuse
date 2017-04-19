@@ -1,0 +1,21 @@
+<script>
+function addSongToPlaylist(songId, playlistId, songTitle, playlistTitle, elem) {
+  if($(elem).hasClass('added'))
+    return;
+  $.ajax({
+    type: "POST",
+    url: "{{ url_for('playlist_song_add') }}",
+    data: JSON.stringify({
+      song_id: songId,
+      playlist_id: playlistId
+    }),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function() {
+      flashSuccess('Added "' + songTitle + '" to "' + playlistTitle + '".')
+      $(elem).html($(elem).text() + " <span class='glyphicon glyphicon-ok'></span>");
+      $(elem).addClass('added');
+    }
+  });
+}
+</script>

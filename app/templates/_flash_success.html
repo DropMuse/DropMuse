@@ -1,0 +1,9 @@
+<script>
+function flashSuccess(message) {
+  console.log('appending');
+  $('#flashed_messages').append(
+        '<div class="alert alert-success">' +
+            '<button type="button" class="close" data-dismiss="alert">' +
+            '&times;</button>' + message + '</div>');
+}
+</script>
