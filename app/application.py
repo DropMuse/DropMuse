@@ -198,6 +198,7 @@ def playlist_export():
             tracks_to_add.append(p.spotify_id)
 
     create_spotify_playlist(current_playlist_name[0], tracks_to_add)
+    flash("Exported playlist: {}".format(current_playlist_name[0]), 'success')
     return jsonify("Exported successfully")
 
 
