@@ -368,9 +368,11 @@ def playlist_edit():
 def song_info(song_id):
     song = db_utils.song_by_id(engine, song_id)
     keywords = db_utils.song_keywords(engine, song_id)
+    playlists = db_utils.user_playlists(engine, current_user.username)
     return render_template('song.html',
                            song=song,
-                           keywords=list(keywords))
+                           keywords=list(keywords),
+                           playlists=list(playlists))
 
 
 @login_manager.user_loader

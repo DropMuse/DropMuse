@@ -42,35 +42,8 @@
   </tbody>
 </table>
 {% include "_audio_helper.html" %}
-<script>
-function addSongToPlaylist(songId, playlistId, songTitle, playlistTitle, elem) {
-  if($(elem).hasClass('added'))
-    return;
-  $.ajax({
-    type: "POST",
-    url: "{{ url_for('playlist_song_add') }}",
-    data: JSON.stringify({
-      song_id: songId,
-      playlist_id: playlistId
-    }),
-    contentType: "application/json",
-    dataType: 'json',
-    success: function() {
-      flashSuccess('Added "' + songTitle + '" to "' + playlistTitle + '".')
-      $(elem).html($(elem).text() + " <span class='glyphicon glyphicon-ok'></span>");
-      $(elem).addClass('added');
-    }
-  });
-}
-
-function flashSuccess(message) {
-  console.log('appending');
-  $('#flashed_messages').append(
-        '<div class="alert alert-success">' +
-            '<button type="button" class="close" data-dismiss="alert">' +
-            '&times;</button>' + message + '</div>');
-}
-</script>
+{% include "_flash_success.html" %}
+{% include "_add_song_to_playlist.html" %}
 {{ pagination.links }}
 {% else %}
 <p>No results found...</p>
