@@ -10,7 +10,7 @@ import db_utils
 import utils
 import recommendation
 from .spotify import (spotify_blueprint, get_spotify_playlists,
-                      create_spotify_playlist)
+                      create_spotify_playlist, do_playlist_import)
 from scheduler import DropmuseScheduler
 import logging
 logging.basicConfig()
@@ -214,8 +214,6 @@ def import_playlists():
 @login_required
 def import_single_playlist(playlist_id):
     playlists = get_spotify_playlists()
-    user_spotify = current_user.spotify
-
     try:
         playlist = next(p for p in playlists['items']
                         if p['id'] == playlist_id)
@@ -223,50 +221,14 @@ def import_single_playlist(playlist_id):
         flash("Couldn't find playlist", "warning")
         return redirect(url_for('profile', username=current_user.username))
 
-    if playlist['owner']['id'] == user_spotify.current_user()['id']:
-        # insert playlist into database
-        db_utils.create_playlist(engine, current_user.id, playlist['name'])
-        user_id = user_spotify.current_user()['id']
-        results = user_spotify.user_playlist_tracks(user_id,
-                                                     playlist['id'])
-        tracks = results['items']
-
-        while results['next']:
-            results = user_spotify.next(results)
-            tracks.extend(results['items'])
-
-        curr_playlist_id = db_utils.get_playlist_id(engine,
-                                                    playlist['name'],
-                                                    current_user.id)
-        #print (tracks[0])
-
-        for item in tracks:
-            # Skip local songs
-            if item['is_local']:
-                continue
-            track = item['track']
-            trackname = track['name']
-            trackalbum = track['album']['name']
-            trackartist = track['artists'][0]['name']
-            trackduration = track.get('duration_ms', 0) / 1000
-            trackpreview = track.get('preview_url')
-            trackuri = track['uri']
-
-            # insert song into database
-            db_utils.create_song(engine, trackname, trackartist,
-                                 trackalbum, trackduration, trackpreview,
-                                 trackuri)
-            curr_song_id = db_utils.get_song_id(engine, trackname,
-                                                trackartist)
-
-            # insert song into playlist.
-            db_utils.add_song_to_playlist(engine, curr_song_id[0],
-                                          curr_playlist_id[0])
-    flash("Imported playlist: {}".format(playlist['name']), 'success')
-
-    # Update the database once we've imported new songs
-    scheduler.schedule_update()
-
+    scheduler.scheduler.add_job(do_playlist_import,
+                                args=(engine,
+                                      current_user.spotify,
+                                      current_user.id,
+                                      playlist_id,
+                                      scheduler)
+                                )
+    flash("Importing playlist: {}".format(playlist['name']), 'success')
     return redirect(url_for('profile', username=current_user.username))
 
 

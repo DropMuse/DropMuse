@@ -23,7 +23,6 @@ sp_oauth = oauth2.SpotifyOAuth(SPOTIFY_CLIENT_ID,
 @login_required
 def start_authentication():
     auth_url = sp_oauth.get_authorize_url()
-    print SERVER_NAME
     return redirect(auth_url)
 
 
@@ -59,3 +58,52 @@ def create_spotify_playlist(current_playlist_name, tracks_to_add):
     user_spotify.user_playlist_add_tracks(user_spotify.me()['id'],
                                           created['id'],
                                           tracks_to_add)
+
+
+def do_playlist_import(engine, user_spotify, user_id, playlist_id,
+                       scheduler):
+    playlists = user_spotify.current_user_playlists()
+    playlist = next(p for p in playlists['items']
+                    if p['id'] == playlist_id)
+
+    if playlist['owner']['id'] == user_spotify.current_user()['id']:
+        # insert playlist into database
+        db_utils.create_playlist(engine, user_id, playlist['name'])
+        spotify_user_id = user_spotify.current_user()['id']
+        results = user_spotify.user_playlist_tracks(spotify_user_id,
+                                                    playlist['id'])
+        tracks = results['items']
+
+        while results['next']:
+            results = user_spotify.next(results)
+            tracks.extend(results['items'])
+
+        curr_playlist_id = db_utils.get_playlist_id(engine,
+                                                    playlist['name'],
+                                                    user_id)
+
+        for item in tracks:
+            # Skip local songs
+            if item['is_local']:
+                continue
+            track = item['track']
+            trackname = track['name']
+            trackalbum = track['album']['name']
+            trackartist = track['artists'][0]['name']
+            trackduration = track.get('duration_ms', 0) / 1000
+            trackpreview = track.get('preview_url')
+            trackuri = track['uri']
+
+            # insert song into database
+            db_utils.create_song(engine, trackname, trackartist,
+                                 trackalbum, trackduration, trackpreview,
+                                 trackuri)
+            curr_song_id = db_utils.get_song_id(engine, trackname,
+                                                trackartist)
+
+            # insert song into playlist.
+            db_utils.add_song_to_playlist(engine, curr_song_id[0],
+                                          curr_playlist_id[0])
+
+    # Update the database once we've imported new songs
+    scheduler.schedule_update()
