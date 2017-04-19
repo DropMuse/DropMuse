@@ -6,8 +6,8 @@ from datetime import datetime
 
 
 def update_after_insert(engine):
-    extract_keywords(engine)
     update_songs_table(engine)
+    extract_keywords(engine)
 
 
 class DropmuseScheduler():
