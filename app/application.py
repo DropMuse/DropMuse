@@ -241,7 +241,6 @@ def import_single_playlist(playlist_id):
             track = item['track']
             trackname = track['name']
             trackalbum = track['album']['name']
-            trackexternalurl = track['external_urls'].get('spotify')
             trackartist = track['artists'][0]['name']
             trackduration = track.get('duration_ms', 0) / 1000
             trackpreview = track.get('preview_url')
@@ -249,8 +248,8 @@ def import_single_playlist(playlist_id):
 
             # insert song into database
             db_utils.create_song(engine, trackname, trackartist,
-                                 trackalbum, trackexternalurl,
-                                 trackduration, trackpreview, trackuri)
+                                 trackalbum, trackduration, trackpreview,
+                                 trackuri)
             curr_song_id = db_utils.get_song_id(engine, trackname,
                                                 trackartist)
 

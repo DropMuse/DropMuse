@@ -26,7 +26,10 @@ def get_item_features(engine):
     num_songs = db_utils.song_max_id(engine)
     item_features = scipy.sparse.lil_matrix((num_songs+1, 3))
     for idx, s in enumerate(sentiments):
-        item_features[idx] = np.array([s.pos, s.neu, s.neg])
+        pos = s.pos or 0
+        neu = s.neu or 0
+        neg = s.neg or 0
+        item_features[idx] = np.array([pos, neu, neg])
     keywords = keyword_sparse_matrix(engine)
     results = scipy.sparse.hstack([item_features, keywords])
     return results
@@ -100,10 +103,9 @@ def dump_model(model):
 
 
 def extract_keywords(engine):
-    db_utils.delete_all_keywords(engine)
     songs = db_utils.song_lyrics(engine)
     song_indices = {i: s.id for i, s in enumerate(songs)}
-    lyrics = [s.lyrics for s in songs]
+    lyrics = [s.lyrics if s.lyrics else "" for s in songs]
     tfidf = TfidfVectorizer(stop_words='english',
                             max_df=0.7)
     tfidf_mat = tfidf.fit_transform(lyrics).toarray()
@@ -112,6 +114,10 @@ def extract_keywords(engine):
     for idx, l in enumerate(tfidf_mat):
         k_idx = song_indices[idx]
         keywords[k_idx] = [(features[x], l[x]) for x in (-l).argsort()][:10]
+
+    db_utils.delete_all_keywords(engine)
     for songid, word_arr in keywords.items():
         for kw in word_arr:
+            if kw[1] == 0:
+                continue
             db_utils.add_song_keyword(engine, songid, kw[0], float(kw[1]))
