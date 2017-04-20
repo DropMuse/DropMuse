@@ -1,8 +1,7 @@
 import numpy as np
 import librosa
-import urllib
-import matplotlib.pyplot as plt
 from urllib.request import urlretrieve
+
 
 def audio_fingerprint(y):
     return np.average(y ** 2) * 100
@@ -21,7 +20,7 @@ def get_audio_analysis(song_url):
     pitches, magnitudes = librosa.piptrack(y=y, sr=sr)
     pitch_ave = np.average(pitches)
 
-    json = {'sound_wave' : y.tolist(), 'pitch' : pitches.tolist()}
+    json = {'sound_wave': y.tolist(), 'pitch': pitches.tolist()}
     y_harm, y_per = librosa.effects.hpss(y)
     harm, perc = audio_fingerprint(y_harm), audio_fingerprint(y_per)
 
