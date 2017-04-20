@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS songs(
     lyrics TEXT,
     preview_url varchar(200),
     spotify_id VARCHAR(200),
+    wave_info TEXT,
     pos REAL,
     neu REAL,
     neg REAL,
