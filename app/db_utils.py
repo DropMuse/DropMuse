@@ -403,3 +403,11 @@ def add_song_keyword(engine, song_id, keyword, weight):
                autocommit=True)
     with engine.connect() as con:
         con.execute(sql, song_id=song_id, keyword=keyword, weight=weight)
+
+def get_wave_info(engine, song_id):
+    sql = text('GET wave_info '
+               'FROM songs '
+               'WHERE song_id=:song_id;')
+
+    with engine.connect() as con:
+        return con.execute(sql, song_id=song_id).fetchall()
