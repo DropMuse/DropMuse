@@ -403,3 +403,21 @@ def add_song_keyword(engine, song_id, keyword, weight):
                autocommit=True)
     with engine.connect() as con:
         con.execute(sql, song_id=song_id, keyword=keyword, weight=weight)
+
+
+def song_audio_features(engine):
+    sql = text('SELECT id, (tempo - min_tempo) / (max_tempo - min_tempo) t, '
+               '       (pitch - min_pitch) / (max_pitch - min_pitch) pi, '
+               '       (harmonic - min_harm) / (max_harm - min_harm) h, '
+               '       (percussive - min_perc) / (max_perc - min_perc) pe '
+               'FROM songs, ('
+               '    SELECT MIN(tempo) min_tempo, MAX(tempo) max_tempo, '
+               '           MIN(pitch) min_pitch, MAX(pitch) max_pitch, '
+               '           MIN(harmonic) min_harm, MAX(harmonic) max_harm, '
+               '           MIN(percussive) min_perc, MAX(percussive) max_perc '
+               '    FROM songs '
+               '    WHERE tempo IS NOT NULL AND pitch IS NOT NULL AND '
+               '          percussive IS NOT NULL AND harmonic IS NOT NULL '
+               '    ) min_max')
+    with engine.connect() as con:
+        return con.execute(sql).fetchall()

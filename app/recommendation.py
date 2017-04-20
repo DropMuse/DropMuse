@@ -22,6 +22,19 @@ def get_interactions(engine):
     return interactions
 
 
+def get_audio_analysis_features(engine):
+    features = db_utils.song_audio_features(engine)
+    num_songs = db_utils.song_max_id(engine)
+    feature_mat = scipy.sparse.lil_matrix((num_songs+1, 4))
+    for s in features:
+        pitch = s.pi or 0
+        harmonic = s.h or 0
+        percussive = s.pe or 0
+        temp = s.t or 0
+        feature_mat[s.id] = np.array([pitch, harmonic, percussive, temp])
+    return feature_mat
+
+
 def artist_matrix(engine):
     '''
     Returns matrix of shape (num_songs, num_artists)
@@ -54,7 +67,8 @@ def get_item_features(engine):
             item_features[s.id] = sent_arr / norm
     keywords = keyword_sparse_matrix(engine)
     artists = artist_matrix(engine)
-    results = scipy.sparse.hstack([item_features, keywords, artists])
+    audio = get_audio_analysis_features(engine)
+    results = scipy.sparse.hstack([item_features, keywords, artists, audio])
     return results
 
 
