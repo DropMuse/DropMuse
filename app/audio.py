@@ -1,6 +1,6 @@
 import numpy as np
 import librosa
-from urllib.request import urlretrieve
+from six.moves.urllib.request import urlretrieve
 
 
 def audio_fingerprint(y):
