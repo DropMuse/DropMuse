@@ -4,7 +4,9 @@ import db_utils
 import scipy
 import numpy as np
 import numpy.linalg as la
-from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.tokenize import word_tokenize, RegexpTokenizer
+
+regex_tokenizer = RegexpTokenizer(r'\w+')
 
 NUM_COMPONENTS = 30
 NUM_EPOCHS = 20
@@ -145,6 +147,35 @@ def dump_model(model):
         pickle.dump(model, f)
 
 
+def word_tokenize_no_punct(sent):
+    tokens = regex_tokenizer.tokenize(sent)
+    return [w for w in tokens if w.isalpha()]
+
+
+def songs_to_vocab(songs):
+    vocab = set()
+    for s in songs:
+        if not s.lyrics:
+            continue
+        sent_vocab = set(word_tokenize_no_punct(s.lyrics))
+        vocab |= sent_vocab
+    return list(vocab)
+
+
+def tf(mat, doc, term):
+    s = np.sum(mat.getrow(doc).todense())
+    if s != 0:
+        return mat[doc, term] / float(s)
+    return 0
+
+
+def idf(mat, term):
+    s = mat.getcol(term).nnz
+    if s != 0:
+        return mat.shape[0] / float(s)
+    return 0
+
+
 def extract_keywords(engine):
     '''
     - Constructs a TFIDF of all lyrics of all songs
@@ -152,23 +183,46 @@ def extract_keywords(engine):
     - Updates the keyword table accordingly
     '''
     songs = db_utils.song_lyrics(engine)
-    song_indices = {i: s.id for i, s in enumerate(songs)}
-    lyrics = [s.lyrics if s.lyrics else "" for s in songs]
-    tfidf = TfidfVectorizer(stop_words='english',
-                            max_df=0.7)
-    tfidf_mat = tfidf.fit_transform(lyrics).toarray()
-    features = tfidf.get_feature_names()
-    keywords = {}
-    for idx, l in enumerate(tfidf_mat):
-        k_idx = song_indices[idx]
-        keywords[k_idx] = [(features[x], l[x]) for x in (-l).argsort()][:10]
+    # lyrics = [s.lyrics if s.lyrics else "" for s in songs]
+    # tfidf = TfidfVectorizer(stop_words='english',
+    #                         max_df=0.7)
+    # tfidf_mat = tfidf.fit_transform(lyrics).toarray()
+
+    vocab = songs_to_vocab(songs)
+    w_indices = {k: idx for idx, k in enumerate(vocab)}
+
+    # matrix
+    # (word_idx, doc_idx) => word_doc_count
+    matrix = scipy.sparse.lil_matrix((len(songs), len(vocab)))
+    for i, s in enumerate(songs):
+        if not s.lyrics:
+            continue
+        for w in word_tokenize_no_punct(s.lyrics):
+            matrix[i, w_indices[w]] += 1
+
+    # tfidf
+    # (word_idx, doc_idx) => word_doc_tfidf_score
+    tfidf = scipy.sparse.lil_matrix((len(songs), len(vocab)))
+    nzx, nzy = matrix.nonzero()
+    for i in range(len(nzx)):
+        doc_idx, term_idx = nzx[i], nzy[i]
+        term_freq = tf(matrix, doc_idx, term_idx)
+        inv_doc_freq = idf(matrix, term_idx)
+        tfidf[doc_idx, term_idx] = term_freq * inv_doc_freq
 
     db_utils.delete_all_keywords(engine)
-    for songid, word_arr in keywords.items():
-        for kw in word_arr:
-            if kw[1] == 0:
+    for i in range(len(songs)):
+        max_indices = (-tfidf.getrow(i).toarray()[0]).argsort()[:10]
+        song_id = songs[i].id
+        for term_idx in max_indices:
+            if tfidf[i, term_idx] == 0:
                 continue
-            db_utils.add_song_keyword(engine, songid, kw[0], float(kw[1]))
+            kw_str = vocab[int(term_idx)]
+            kw_weight = tfidf[i, term_idx]
+            db_utils.add_song_keyword(engine,
+                                      song_id,
+                                      kw_str,
+                                      float(kw_weight))
 
 
 def similar_songs(engine, song_id, num_results=5):
