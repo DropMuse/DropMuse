@@ -194,8 +194,9 @@ def extract_keywords(engine):
     vocab = songs_to_vocab(songs)
     w_indices = {k: idx for idx, k in enumerate(vocab)}
 
-    # matrix
-    # (word_idx, doc_idx) => word_doc_count
+    # Construct document term frequency matrix
+    #   matrix
+    #   (word_idx, doc_idx) => word_doc_count
     matrix = scipy.sparse.lil_matrix((len(songs), len(vocab)))
     for i, s in enumerate(songs):
         if not s.lyrics:
@@ -203,18 +204,23 @@ def extract_keywords(engine):
         for w in word_tokenize_no_punct(s.lyrics):
             matrix[i, w_indices[w]] += 1
 
-    # tfidf
-    # (word_idx, doc_idx) => word_doc_tfidf_score
+    # Calculate tfidf score for each term
+    #   tfidf
+    #   (word_idx, doc_idx) => word_doc_tfidf_score
     tfidf = scipy.sparse.lil_matrix((len(songs), len(vocab)))
-    nzx, nzy = matrix.nonzero()
+    nzx, nzy = matrix.nonzero()  # Only conerned w/ nonzero term entries
     for i in range(len(nzx)):
         doc_idx, term_idx = nzx[i], nzy[i]
         term_freq = tf(matrix, doc_idx, term_idx)
         inv_doc_freq = idf(matrix, term_idx)
         tfidf[doc_idx, term_idx] = term_freq * inv_doc_freq
 
+    # Flush old keywords
     db_utils.delete_all_keywords(engine)
+
+    # Do insertion for keywords of all songs
     for i in range(len(songs)):
+        # Sort tfidf score descending, find 10 most relevant words
         max_indices = (-tfidf.getrow(i).toarray()[0]).argsort()[:10]
         song_id = songs[i].id
         for term_idx in max_indices:
@@ -222,6 +228,7 @@ def extract_keywords(engine):
                 continue
             kw_str = vocab[int(term_idx)]
             kw_weight = tfidf[i, term_idx]
+            # Do insertion into database
             db_utils.add_song_keyword(engine,
                                       song_id,
                                       kw_str,
