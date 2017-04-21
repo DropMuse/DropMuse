@@ -4,9 +4,11 @@ import db_utils
 import scipy
 import numpy as np
 import numpy.linalg as la
-from nltk.tokenize import word_tokenize, RegexpTokenizer
+from nltk.tokenize import RegexpTokenizer
+from nltk.corpus import stopwords
 
 regex_tokenizer = RegexpTokenizer(r'\w+')
+eng_stopwords = stopwords.words('english')
 
 NUM_COMPONENTS = 30
 NUM_EPOCHS = 20
@@ -149,7 +151,8 @@ def dump_model(model):
 
 def word_tokenize_no_punct(sent):
     tokens = regex_tokenizer.tokenize(sent)
-    return [w for w in tokens if w.isalpha()]
+    return [w.lower() for w in tokens
+            if w.lower() not in eng_stopwords and len(w) > 1]
 
 
 def songs_to_vocab(songs):
