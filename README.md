@@ -14,14 +14,19 @@
     pip install -r requirements.txt
     ```
 
-3. Copy `.env` template:
+3. Install necessary NLTK data:
+    ```
+    python -m nltk.downloader punkt stopwords
+    ```
+
+4. Copy `.env` template:
 
     ```
     cp .env.template .env
     ```
 
-4. Add your local DB credentials to your `.env`.
-5. Create the SQL tables from `tables.sql` in your database.
+5. Add your local DB credentials to your `.env`.
+6. Create the SQL tables from `tables.sql` in your database.
 
 ### Production setup
 
