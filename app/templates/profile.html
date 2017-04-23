@@ -4,16 +4,20 @@
 <hr>
 {% if playlists|length > 0 %}
 <!-- Connect to Spotify links -->
-{% if user.spotify %}
+
+{% if current_user.spotify %}
 <a href="{{url_for('spotify.disconnect')}}" class="btn btn-default">Disconnect Spotify Account <i class="fa fa-spotify"></i></a>
 {% else %}
 <a href="{{url_for('spotify.start_authentication')}}" class="btn btn-default">Connect to Spotify <i class="fa fa-spotify"></i></a>
 {% endif %}
+
 <hr>
 <h4>Playlists</h4>
 <a href="{{url_for('playlist_create')}}" class="btn btn-default">New Playlist <span class="glyphicon glyphicon-plus-sign"></span></a>
 {% if user.spotify %}
-<a href="{{url_for('import_playlists')}}" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
+  {% if user.username == current_user.username %}
+  <a href="{{url_for('import_playlists')}}" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
+  {% endif %}
 {% endif %}
 <table class="table" id="playlist-table" width="100%" cellspacing="0">
   <thead>
@@ -33,7 +37,7 @@
       <td>
         <a class="btn btn-default btn-sm" href="{{url_for('playlist', playlist_id=playlist.id)}}">View <span class="glyphicon glyphicon-th-list"></a>
         <a onclick="removePlaylistFromUser({{user.id}}, {{playlist.id}},'{{user.username}}')" class="btn btn-default btn-sm">Delete <span class="glyphicon glyphicon-minus-sign"></span></a>
-        {% if user.spotify %}
+        {% if current_user.spotify %}
         <a onclick="exportSpofityPlaylist({{playlist.id}})" class="btn btn-default btn-sm">Export <i class="fa fa-spotify"></i></a>
         {% endif %}
       </td>
@@ -84,7 +88,11 @@ function exportSpofityPlaylist( playlistId) {
 <hr>
 {% endif %}
 
+  {% if user.username == current_user.username %}
+    <p>You have no playlists. Want to <a href="{{ url_for('playlist_create') }}">create</a> one?</p>
+  {% else %}
+    <p> {{ user.username}} has no playlists. </p>
+  {% endif %}
 
-<p>You have no playlists. Want to <a href="{{ url_for('playlist_create') }}">create</a> one?</p>
 {% endif %}
 {% endblock %}

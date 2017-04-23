@@ -45,6 +45,8 @@ def get_user_by_id(engine, user_id):
             return User(user_id, username=res[1])
 
 
+
+
 def create_playlist(engine, user_id, title):
     '''
     Creates a playlist in the given user's account
@@ -220,6 +222,14 @@ def get_playlist_id(engine, playlist_name, uid):
     with engine.connect() as con:
         query = con.execute(sql, playlist_name=playlist_name, uid=uid)
         return query.fetchone()
+
+
+def user_from_username(engine, username):
+    ''' Checks to see if a username already exists '''
+    sql = text('SELECT * FROM users WHERE username=:username')
+    with engine.connect() as con:
+        res = con.execute(sql, username=username)
+    return res.fetchone()
 
 
 def get_playlist_name(engine, playlist_id):
