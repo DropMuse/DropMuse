@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
 <h3>Search for: "{{ query }}"</h3>
+<a class="btn btn-default pull-right" href="{{ url_for('user_search') }}?q={{query}}"><i class="glyphicon glyphicon-user" aria-hidden="true"></i>
+ Search for Users</a>
 {% if songs|length > 0 %}
 {{ pagination.info }}
 {{ pagination.links }}

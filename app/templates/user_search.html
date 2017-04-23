@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block content %}
+<h3>User search for: "{{ query }}"</h3>
+{% if users|length > 0 %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>User</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+      <tr>
+        <td>{{ user.username }}</td>
+        <td><a class="btn btn-default btn-sm" href="{{ url_for('profile', username=user.username) }}"><span class="glyphicon glyphicon-info-sign"></span></a></td>
+        <td><a class="btn btn-default btn-sm" onclick="followUser({{user.id}}, '{{user.username}}', this)">Follow <span class="glyphicon glyphicon-plus-sign"></span></a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include "_flash_success.html" %}
+<script type="text/javascript">
+function followUser(user_id, username, elem) {
+  if($(elem).hasClass('added'))
+    return;
+  $.ajax({
+    type: "POST",
+    url: "{{ url_for('user_follow') }}",
+    data: JSON.stringify({
+      id: user_id
+    }),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function() {
+      flashSuccess('Followed ' + username + '.');
+      $(elem).html($(elem).text() + " <span class='glyphicon glyphicon-ok'></span>");
+      $(elem).addClass('added');
+    }
+  });
+}
+</script>
+{% else %}
+<p>No results found...</p>
+{% endif %}
+{% endblock %}

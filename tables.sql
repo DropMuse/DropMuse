@@ -78,3 +78,15 @@ CREATE TABLE IF NOT EXISTS keywords(
         ON UPDATE CASCADE,
     PRIMARY KEY (song_id, word)
 );
+
+CREATE TABLE IF NOT EXISTS following(
+    user_id BIGINT UNSIGNED,
+    following_id BIGINT UNSIGNED,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (follower_id) REFERENCES users(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    PRIMARY KEY (user_id, follower_id)
+);

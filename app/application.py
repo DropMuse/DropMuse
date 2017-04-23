@@ -154,7 +154,7 @@ def playlist_recommendations(playlist_id):
 @app.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
-    q = request.args.get('q')
+    q = request.args.get('q', '')
 
     per_page = 25
     page = request.args.get('page', type=int, default=1)
@@ -173,6 +173,16 @@ def search():
                            query=(q if q else ''),
                            playlists=list(playlists)
                            )
+
+
+@app.route('/search/users', methods=['GET', 'POST'])
+@login_required
+def user_search():
+    q = request.args.get('q', '')
+    results = db_utils.search_users(engine, q)
+    return render_template('user_search.html',
+                           users=results,
+                           query=(q if q else ''))
 
 
 @app.route('/playlist/add_song', methods=['POST'])
@@ -208,6 +218,16 @@ def playlist_export():
     create_spotify_playlist(current_playlist_name[0], tracks_to_add)
     flash("Exported playlist: {}".format(current_playlist_name[0]), 'success')
     return jsonify("Exported successfully")
+
+
+@app.route('/user_follow', methods=['POST'])
+@login_required
+def user_follow():
+    data = request.json
+    user_id = data['id']
+
+    db_utils.create_follower(engine, current_user.id, user_id)
+    return jsonify("Followed successfully")
 
 
 @app.route('/playlist/import_playlists', methods=['GET'])

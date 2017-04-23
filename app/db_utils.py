@@ -85,6 +85,15 @@ def search_songs(engine, query, limit=100, offset=0):
         return results_count, list(results)
 
 
+def search_users(engine, query):
+    query = '%{}%'.format(query.lower())
+    sql = text('SELECT * '
+               'FROM users '
+               'WHERE LOWER(username) LIKE :query;')
+    with engine.connect() as con:
+        return list(con.execute(sql, query=query).fetchall())
+
+
 def user_playlists(engine, username):
     ''' Returns the playlists of a user '''
     # ADVANCED
@@ -443,3 +452,14 @@ def song_audio_features(engine):
                '    ) min_max')
     with engine.connect() as con:
         return con.execute(sql).fetchall()
+
+
+def create_follower(engine, follower, user_followed):
+    sql = text('INSERT INTO following(user_id, following_id) '
+               'VALUES (:follower, :user_followed) '
+               'ON DUPLICATE KEY UPDATE user_id=user_id',
+               autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql,
+                    follower=follower,
+                    user_followed=user_followed)
