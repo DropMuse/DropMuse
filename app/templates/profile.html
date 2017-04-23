@@ -14,7 +14,7 @@
 <hr>
 <h4>Playlists</h4>
 <a href="{{url_for('playlist_create')}}" class="btn btn-default">New Playlist <span class="glyphicon glyphicon-plus-sign"></span></a>
-{% if user.spotify %}
+{% if current_user.spotify %}
   {% if user.username == current_user.username %}
   <a href="{{url_for('import_playlists')}}" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
   {% endif %}

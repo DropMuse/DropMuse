@@ -16,7 +16,7 @@
 
 3. Install necessary NLTK data:
     ```
-    python -m nltk.downloader punkt stopwords
+    python -m nltk.downloader punkt stopwords vader_lexicon
     ```
 
 4. Copy `.env` template:

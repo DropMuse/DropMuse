@@ -108,7 +108,7 @@ def profile(username):
     profile_user = db_utils.user_from_username(engine, username)
     return render_template('profile.html',
                            user=profile_user,
-                           current_user = current_user,
+                           current_user=current_user,
                            playlists=list(playlists))
 
 
