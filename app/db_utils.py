@@ -45,8 +45,6 @@ def get_user_by_id(engine, user_id):
             return User(user_id, username=res[1])
 
 
-
-
 def create_playlist(engine, user_id, title):
     '''
     Creates a playlist in the given user's account
