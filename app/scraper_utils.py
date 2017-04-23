@@ -2,6 +2,7 @@ from sqlalchemy import text
 from lyrics import get_lyrics, get_sentiment
 from audio import get_audio_analysis
 import string
+import json
 
 
 def update_songs_table(engine):
@@ -29,13 +30,13 @@ def update_songs_table(engine):
         else:
             lyrics = ''.join(filter(lambda x: x in printable, lyrics))
         sentiment = get_sentiment(lyrics)
-        tempo, pitch, harmonic, percussive = get_audio_analysis(preview_url)
+        tempo, pitch, harm, perc, wave = get_audio_analysis(preview_url)
 
         sql = text('UPDATE songs '
                    'SET lyrics=:lyrics, pos=:pos, neg=:neg, neu=:neu, '
                    '    compound=:compound, tempo=:tempo, '
                    '    pitch=:pitch, harmonic=:harmonic, '
-                   '    percussive=:percussive '
+                   '    percussive=:percussive, wave_info=:wave '
                    'WHERE id=:song_id;', autocommit=True)
         con.execute(sql,
                     lyrics=str(lyrics) if lyrics else None,
@@ -45,6 +46,7 @@ def update_songs_table(engine):
                     compound=sentiment['compound'],
                     tempo=tempo,
                     pitch=pitch,
-                    harmonic=harmonic,
-                    percussive=percussive,
-                    song_id=song_id)
+                    harmonic=harm,
+                    percussive=perc,
+                    song_id=song_id,
+                    wave_info=json.dumps(wave))
