@@ -29,6 +29,15 @@
       {% endfor %}
       </ul>
     {% endif %}
+
+    <p><b>Audio Analytics:</b></p>
+
+    <p>Tempo: {{ song.tempo if song.tempo else "Unknown" }}</p>
+    <p>Pitch: {{ song.pitch if song.pitch else "Unknown" }}</p>
+    <p>Harmonic:{{ song.harmonic if song.harmonic else "Unknown" }}</p>
+    <p>Percussive: {{ song.percussive if song.percussive else "Unknown" }}</p>
+
+
     {% if similar|length > 0 %}
     <p><b>Similar Songs:</b></p>
       <ul>
