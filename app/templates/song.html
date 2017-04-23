@@ -33,7 +33,7 @@
     <p><b>Similar Songs:</b></p>
       <ul>
       {% for sim in similar %}
-        <li><a href="{{url_for('song_info', song_id=sim.id)}}">{{ sim.title }}</a></li>
+        <li><a href="{{url_for('song_info', song_id=sim.id)}}">{{ sim.title }} - {{ sim.artist }}</a></li>
       {% endfor %}
       </ul>
     {% endif %}
