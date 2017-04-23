@@ -68,6 +68,9 @@ def search_songs(engine, query, limit=100, offset=0):
                "FROM songs "
                "WHERE LOWER(title) LIKE :query "
                "      OR LOWER(artist) LIKE :query "
+               "      OR id IN (SELECT song_id "
+               "                FROM keywords "
+               "                WHERE word LIKE :query)"
                "LIMIT :limit OFFSET :offset")
     sql_count = text("SELECT COUNT(*) "
                      "FROM songs "
