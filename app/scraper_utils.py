@@ -10,7 +10,7 @@ def update_songs_table(engine):
     sql = text('SELECT id, artist, title, preview_url '
                'FROM songs '
                'WHERE ((lyrics IS NULL) AND (pos IS NULL) AND (tempo IS NULL)) '
-               '      OR (preview_url IS NOT NULL AND wave_info IS NOT NULL);')
+               '      OR (preview_url IS NOT NULL AND wave_info IS NULL);')
 
     con = engine.connect()
     result = list(con.execute(sql).fetchall())
@@ -56,3 +56,4 @@ def update_songs_table(engine):
                     percussive=perc,
                     song_id=song_id,
                     wave=json.dumps(wave))
+    print 'Finished updating songs table!'
