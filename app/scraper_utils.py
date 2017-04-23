@@ -13,7 +13,11 @@ def update_songs_table(engine):
                '      OR (preview_url IS NOT NULL AND wave_info IS NOT NULL);')
 
     con = engine.connect()
-    result = con.execute(sql).fetchall()
+    result = list(con.execute(sql).fetchall())
+
+    print "Running analysis on {} songs".format(len(result))
+
+    printable = set(string.printable)
 
     for res in result:
         song_id = res['id']
@@ -21,17 +25,18 @@ def update_songs_table(engine):
         song = res['title']
         preview_url = res['preview_url']
 
-        print "Doing analysis for '{}/{}'".format(
+        print "* Doing analysis for '{}/{}'".format(
             artist.encode('utf-8'), song.encode('utf-8'))
 
-        printable = set(string.printable)
         lyrics = get_lyrics(artist, song)
         if(lyrics is None):
             print("Could not find lyrics for " + song)
         else:
             lyrics = ''.join(filter(lambda x: x in printable, lyrics))
         sentiment = get_sentiment(lyrics)
+        print "Got sentiment for " + song
         tempo, pitch, harm, perc, wave = get_audio_analysis(preview_url)
+        print "Got audio data for " + song
 
         sql = text('UPDATE songs '
                    'SET lyrics=:lyrics, pos=:pos, neg=:neg, neu=:neu, '
