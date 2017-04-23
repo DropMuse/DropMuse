@@ -341,11 +341,13 @@ def song_info(song_id):
     playlists = db_utils.user_playlists(engine, current_user.username)
     similar_ids = recommendation.similar_songs(engine, int(song_id))
     similar = db_utils.song_details_many(engine, similar_ids)
+    wave_info = db_utils.get_wave_info(engine, song_id)
     return render_template('song.html',
                            song=song,
                            keywords=list(keywords),
                            playlists=list(playlists),
-                           similar=similar)
+                           similar=similar,
+                           wave_info=wave_info)
 
 
 @login_manager.user_loader
