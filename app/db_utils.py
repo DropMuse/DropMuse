@@ -416,7 +416,7 @@ def add_song_keyword(engine, song_id, keyword, weight):
 
 
 def get_wave_info(engine, song_id):
-    sql = text('GET wave_info '
+    sql = text('SELECT wave_info '
                'FROM songs '
                'WHERE song_id=:song_id;')
 
