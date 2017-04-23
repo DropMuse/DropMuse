@@ -11,8 +11,8 @@ def extract_max(pitches,magnitudes, shape):
     new_pitches = []
     new_magnitudes = []
     for i in range(0, shape[1]):
-        new_pitches.append(np.max(pitches[:,i]))
-        new_magnitudes.append(np.max(magnitudes[:,i]))
+        new_pitches.append(float(np.max(pitches[:,i])))
+        new_magnitudes.append(float(np.max(magnitudes[:,i])))
     return (new_pitches,new_magnitudes)
 
 def smooth(x,window_len=11,window='hanning'):
@@ -49,8 +49,7 @@ def get_audio_analysis(song_url):
 
 
     json = {'sound_wave': np.array(y[:len(pitches)]).tolist(), 'pitch': pitches}
-    print(json)
     y_harm, y_per = librosa.effects.hpss(y)
     harm, perc = audio_fingerprint(y_harm), audio_fingerprint(y_per)
     pitch_ave = np.average(pitches)
-    return float(tempo), float(pitch_ave), float(harm), float(perc), str(json)
+    return float(tempo), float(pitch_ave), float(harm), float(perc), json
