@@ -1,5 +1,6 @@
 import numpy as np
 import librosa
+#import matplotlib.pyplot as plt
 from six.moves.urllib.request import urlretrieve
 
 
@@ -41,9 +42,14 @@ def get_audio_analysis(song_url):
     # pitch = Frequency
     pitches, magnitudes = librosa.piptrack(y=y, sr=sr, fmax=1000, hop_length=1000)
 
-    pitches, magnitudes = extract_max(pitches, magnitudes, pitches.shape)
 
-    json = {'sound_wave': y[:len(pitches)], 'pitch': pitches}
+    pitches, magnitudes = extract_max(pitches, magnitudes, pitches.shape)
+    y[abs(y) < 10**-2] = 0
+    y = np.trim_zeros(y);
+
+
+    json = {'sound_wave': np.array(y[:len(pitches)]).tolist(), 'pitch': pitches}
+    print(json)
     y_harm, y_per = librosa.effects.hpss(y)
     harm, perc = audio_fingerprint(y_harm), audio_fingerprint(y_per)
     pitch_ave = np.average(pitches)
