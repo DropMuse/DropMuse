@@ -85,8 +85,8 @@ CREATE TABLE IF NOT EXISTS following(
     FOREIGN KEY (user_id) REFERENCES users(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    FOREIGN KEY (follower_id) REFERENCES users(id)
+    FOREIGN KEY (following_id) REFERENCES users(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    PRIMARY KEY (user_id, follower_id)
+    PRIMARY KEY (user_id, following_id)
 );
