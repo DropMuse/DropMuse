@@ -39,6 +39,10 @@
       <li>Percussive: {{ song.percussive if song.percussive else "Unknown" }}</li>
     </ul>
 
+    {% if song.wave_info %}
+    <div id="graph"></div>
+    {% endif %}
+
     {% if similar|length > 0 %}
     <p><b>Similar Songs:</b></p>
       <ul>
