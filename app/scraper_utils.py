@@ -49,4 +49,4 @@ def update_songs_table(engine):
                     harmonic=harm,
                     percussive=perc,
                     song_id=song_id,
-                    wave_info=json.dumps(wave))
+                    wave=json.dumps(wave))
