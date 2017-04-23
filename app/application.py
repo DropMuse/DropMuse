@@ -105,8 +105,10 @@ def profile(username):
         flash('User %s not found.' % username)
         return redirect(url_for('index'))
     playlists = db_utils.user_playlists(engine, username)
+    profile_user = db_utils.user_from_username(engine, username)
     return render_template('profile.html',
-                           user=current_user,
+                           user=profile_user,
+                           current_user = current_user,
                            playlists=list(playlists))
 
 
