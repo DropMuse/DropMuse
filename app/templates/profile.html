@@ -17,8 +17,6 @@
 <br>
 
 <hr>
-{% if playlists|length > 0 %}
-<!-- Connect to Spotify links -->
 
 {% if current_user.spotify %}
 <a href="{{url_for('spotify.disconnect')}}" class="btn btn-default">Disconnect Spotify Account <i class="fa fa-spotify"></i></a>
@@ -26,6 +24,10 @@
 <a href="{{url_for('spotify.start_authentication')}}" class="btn btn-default">Connect to Spotify <i class="fa fa-spotify"></i></a>
 {% endif %}
 <hr>
+
+
+{% if playlists|length > 0 %}
+<!-- Connect to Spotify links -->
 
 
 <h4>Playlists</h4>
