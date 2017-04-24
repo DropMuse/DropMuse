@@ -20,10 +20,18 @@
 
 {% if current_user.spotify %}
 <a href="{{url_for('spotify.disconnect')}}" class="btn btn-default">Disconnect Spotify Account <i class="fa fa-spotify"></i></a>
+<hr>
+  {% if current_user.username == user.username %}
+  <a href="{{url_for('import_playlists')}}" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
+<hr>
+  {% endif %}
+
+
 {% else %}
 <a href="{{url_for('spotify.start_authentication')}}" class="btn btn-default">Connect to Spotify <i class="fa fa-spotify"></i></a>
-{% endif %}
 <hr>
+{% endif %}
+
 
 
 {% if playlists|length > 0 %}
@@ -32,11 +40,7 @@
 
 <h4>Playlists</h4>
 <a href="{{url_for('playlist_create')}}" class="btn btn-default">New Playlist <span class="glyphicon glyphicon-plus-sign"></span></a>
-{% if current_user.spotify %}
-  {% if user.username == current_user.username %}
-  <a href="{{url_for('import_playlists')}}" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
-  {% endif %}
-{% endif %}
+
 <table class="table" id="playlist-table" width="100%" cellspacing="0">
   <thead>
     <tr>
@@ -66,15 +70,6 @@
 
 
 {% else %}
-{% if user.spotify %}
-<a href="{{url_for('spotify.disconnect')}}" class="btn btn-default">Disconnect Spotify Account <i class="fa fa-spotify"></i></a>
-<hr>
-<a href="{{url_for('import_playlists')}}" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
-<hr>
-{% else %}
-<a href="{{url_for('spotify.start_authentication')}}" class="btn btn-default">Connect to Spotify <i class="fa fa-spotify"></i></a>
-<hr>
-{% endif %}
 
   {% if user.username == current_user.username %}
     <p>You have no playlists. Want to <a href="{{ url_for('playlist_create') }}">create</a> one?</p>
