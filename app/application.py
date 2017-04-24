@@ -356,6 +356,7 @@ def playlist_remove():
     db_utils.remove_playlist_from_user(engine, user_id, playlist_id)
     return jsonify("Removed successfully")
 
+
 @app.route('/playlist/edit', methods=['PUT'])
 @login_required
 def playlist_edit():
