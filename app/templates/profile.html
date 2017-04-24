@@ -1,6 +1,21 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2> {{ user.username }}'s Profile</h2>
+
+
+
+{% if user.username != current_user.username %}
+  <h2> {{ user.username }}'s Profile  <a class="btn btn-default btn-sm" onclick="followUser({{user.id}}, '{{user.username}}', this)">Follow <span class="glyphicon glyphicon-plus-sign"></span></a>   <a href="{{url_for('connections', username=user.username)}}" class="btn btn-default"> {{ user.username }}'s Connections <span class="glyphicon glyphicon-info-sign"></span> </a> </h2>
+
+{% else %}
+
+<h2> {{ user.username }}'s Profile  <a href="{{url_for('connections', username=user.username)}}" class="btn btn-default"> Your Connections <span class="glyphicon glyphicon-info-sign"></span> </a> </h2>
+
+{% endif %}
+
+
+
+<br>
+
 <hr>
 {% if playlists|length > 0 %}
 <!-- Connect to Spotify links -->
@@ -10,6 +25,9 @@
 {% else %}
 <a href="{{url_for('spotify.start_authentication')}}" class="btn btn-default">Connect to Spotify <i class="fa fa-spotify"></i></a>
 {% endif %}
+<hr>
+
+
 
 <hr>
 <h4>Playlists</h4>
@@ -73,6 +91,24 @@ function exportSpofityPlaylist( playlistId) {
     dataType: 'json',
   }).always(function() {
     location.reload();
+  });
+
+  function followUser(user_id, username, elem) {
+  if($(elem).hasClass('added'))
+    return;
+  $.ajax({
+    type: "POST",
+    url: "{{ url_for('user_follow') }}",
+    data: JSON.stringify({
+      id: user_id
+    }),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function() {
+      flashSuccess('Followed ' + username + '.');
+      $(elem).html($(elem).text() + " <span class='glyphicon glyphicon-ok'></span>");
+      $(elem).addClass('added');
+    }
   });
 }
 </script>
