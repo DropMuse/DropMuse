@@ -111,6 +111,7 @@ def profile(username):
                            current_user=current_user,
                            playlists=list(playlists))
 
+
 @app.route('/profile/<username>/connections')
 @login_required
 def connections(username):
@@ -119,17 +120,18 @@ def connections(username):
         return redirect(url_for('index'))
     profile_user = db_utils.user_from_username(engine, username)
     followings = db_utils.get_user_followers(engine, profile_user.id)
-    if(followings == None):
+    if followings is None:
         followings = []
 
     followers = db_utils.get_user_followings(engine, profile_user.id)
-    if (followers == None):
+    if followers is None:
         followers = []
 
     return render_template('connections.html',
                            user=profile_user,
                            followings=list(followings),
                            followers=list(followers))
+
 
 @app.route('/user_follow', methods=['POST'])
 @login_required
@@ -247,16 +249,6 @@ def playlist_export():
     create_spotify_playlist(current_playlist_name[0], tracks_to_add)
     flash("Exported playlist: {}".format(current_playlist_name[0]), 'success')
     return jsonify("Exported successfully")
-
-
-@app.route('/user_follow', methods=['POST'])
-@login_required
-def user_follow():
-    data = request.json
-    user_id = data['id']
-
-    db_utils.create_follower(engine, current_user.id, user_id)
-    return jsonify("Followed successfully")
 
 
 @app.route('/playlist/import_playlists', methods=['GET'])

@@ -93,6 +93,7 @@ def create_follower(engine, follower, user_followed):
                     follower=follower,
                     user_followed=user_followed)
 
+
 def get_user_followers(engine, user_id):
     sql = text('SELECT * '
                'FROM users '
@@ -101,6 +102,7 @@ def get_user_followers(engine, user_id):
                'WHERE following.user_id=:user_id')
     with engine.connect() as con:
         return con.execute(sql, user_id=user_id)
+
 
 def get_user_followings(engine, user_id):
     sql = text('SELECT * '
@@ -142,6 +144,7 @@ def user_playlists(engine, username):
                                       count=p['COUNT(songs.id)'],
                                       duration=p['SUM(duration)']))
         return playlists
+
 
 def add_song_to_playlist(engine, song_id, playlist_id):
     ''' Adds song to the given playlist '''
