@@ -118,13 +118,13 @@ def connections(username):
         flash('User %s not found.' % username)
         return redirect(url_for('index'))
     profile_user = db_utils.user_from_username(engine, username)
-    followers = db_utils.get_user_followers(engine, profile_user.id)
-    if(followers == None):
-        followers = []
-
-    followings = db_utils.get_user_followings(engine, profile_user.id)
-    if (followings == None):
+    followings = db_utils.get_user_followers(engine, profile_user.id)
+    if(followings == None):
         followings = []
+
+    followers = db_utils.get_user_followings(engine, profile_user.id)
+    if (followers == None):
+        followers = []
 
     return render_template('connections.html',
                            user=profile_user,

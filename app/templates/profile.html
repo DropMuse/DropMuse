@@ -4,11 +4,11 @@
 
 
 {% if user.username != current_user.username %}
-  <h2> {{ user.username }}'s Profile  <a class="btn btn-default btn-sm" onclick="followUser({{user.id}}, '{{user.username}}', this)">Follow <span class="glyphicon glyphicon-plus-sign"></span></a>   <a href="{{url_for('connections', username=user.username)}}" class="btn btn-default"> {{ user.username }}'s Connections <span class="glyphicon glyphicon-info-sign"></span> </a> </h2>
+  <h2> {{ user.username }}'s Profile  <a class="btn btn-default btn-sm" onclick="followUser({{user.id}}, '{{user.username}}')">Follow <span class="glyphicon glyphicon-plus-sign"></span></a>   <a href="{{url_for('connections', username=user.username)}}" class="btn btn-default"> {{ user.username }}'s Connections <span class="glyphicon glyphicon-info-sign"></span> </a> </h2>
 
 {% else %}
 
-<h2> {{ user.username }}'s Profile  <a href="{{url_for('connections', username=user.username)}}" class="btn btn-default"> Your Connections <span class="glyphicon glyphicon-info-sign"></span> </a> </h2>
+<h2> Your Profile  <a href="{{url_for('connections', username=user.username)}}" class="btn btn-default"> Your Connections <span class="glyphicon glyphicon-info-sign"></span> </a> </h2>
 
 {% endif %}
 
@@ -28,8 +28,6 @@
 <hr>
 
 
-
-<hr>
 <h4>Playlists</h4>
 <a href="{{url_for('playlist_create')}}" class="btn btn-default">New Playlist <span class="glyphicon glyphicon-plus-sign"></span></a>
 {% if current_user.spotify %}
@@ -64,6 +62,27 @@
   </tbody>
 </table>
 
+
+{% else %}
+{% if user.spotify %}
+<a href="{{url_for('spotify.disconnect')}}" class="btn btn-default">Disconnect Spotify Account <i class="fa fa-spotify"></i></a>
+<hr>
+<a href="{{url_for('import_playlists')}}" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
+<hr>
+{% else %}
+<a href="{{url_for('spotify.start_authentication')}}" class="btn btn-default">Connect to Spotify <i class="fa fa-spotify"></i></a>
+<hr>
+{% endif %}
+
+  {% if user.username == current_user.username %}
+    <p>You have no playlists. Want to <a href="{{ url_for('playlist_create') }}">create</a> one?</p>
+  {% else %}
+    <p> {{ user.username}} has no playlists. </p>
+  {% endif %}
+
+{% endif %}
+
+{% include "_flash_success.html" %}
 <script>
 function removePlaylistFromUser(userId, playlistId, userName) {
   $.ajax({
@@ -81,17 +100,18 @@ function removePlaylistFromUser(userId, playlistId, userName) {
 }
 
 function exportSpofityPlaylist( playlistId) {
-  $.ajax({
-    type: "POST",
-    url: "{{url_for('playlist_export')}}",
-    data: JSON.stringify({
-      playlist_id: playlistId,
-    }),
-    contentType: "application/json",
-    dataType: 'json',
-  }).always(function() {
-    location.reload();
-  });
+    $.ajax({
+        type: "POST",
+        url: "{{url_for('playlist_export')}}",
+        data: JSON.stringify({
+            playlist_id: playlistId,
+        }),
+        contentType: "application/json",
+        dataType: 'json',
+    }).always(function () {
+        location.reload();
+    });
+}
 
   function followUser(user_id, username, elem) {
   if($(elem).hasClass('added'))
@@ -113,22 +133,4 @@ function exportSpofityPlaylist( playlistId) {
 }
 </script>
 
-{% else %}
-{% if user.spotify %}
-<a href="{{url_for('spotify.disconnect')}}" class="btn btn-default">Disconnect Spotify Account <i class="fa fa-spotify"></i></a>
-<hr>
-<a href="{{url_for('import_playlists')}}" class="btn btn-default">Import from Spotify <i class="fa fa-spotify"></i></span></a>
-<hr>
-{% else %}
-<a href="{{url_for('spotify.start_authentication')}}" class="btn btn-default">Connect to Spotify <i class="fa fa-spotify"></i></a>
-<hr>
-{% endif %}
-
-  {% if user.username == current_user.username %}
-    <p>You have no playlists. Want to <a href="{{ url_for('playlist_create') }}">create</a> one?</p>
-  {% else %}
-    <p> {{ user.username}} has no playlists. </p>
-  {% endif %}
-
-{% endif %}
 {% endblock %}

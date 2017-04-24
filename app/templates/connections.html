@@ -1,35 +1,32 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2> {{ user.username }}'s Connections</h2>
+
+{% if user.username != current_user.username %}
+    <h2> {{ user.username }}'s Connections</h2>
+{% else %}
+    <h2> Your Connections</h2>
+{% endif %}
 <hr>
 
-<a class="btn btn-default" href="{{ url_for('profile', username=user.username) }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+
+{% if user.username != current_user.username %}
+    <a class="btn btn-default" href="{{ url_for('profile', username=user.username) }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
  Return to {{ user.username }}'s profile</a>
 
-<hr>
-<h4> {{ user.username }}'s Followers</h4>
+{% else %}
+    <a class="btn btn-default" href="{{ url_for('profile', username=user.username) }}"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+ Return to your profile</a>
 
-<table class="table" id="followers-table" width="100%" cellspacing="0">
-  <thead>
-    <tr>
-      <th>Username</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for follower in followers %}
-    <tr>
-      <td>{{ follower.username }}</td>
-      <td>
-        <a class="btn btn-default btn-sm" href="{{url_for('profile', username=follower.username)}}"> <span class="glyphicon glyphicon-info-sign"> </span></a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% endif %}
+
 
 <hr>
-<h4> {{ user.username }}'s Following</h4>
+
+{% if user.username != current_user.username %}
+    <h4> People {{ user.username }} Follows </h4>
+{% else %}
+    <h4> People You Follows</h4>
+{% endif %}
 
 <table class="table" id="following-table" width="100%" cellspacing="0">
   <thead>
@@ -44,6 +41,33 @@
       <td>{{ following.username }}</td>
       <td>
           <a class="btn btn-default btn-sm" href="{{url_for('profile', username=following.username)}}"> <span class="glyphicon glyphicon-info-sign"> </span></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<hr>
+{% if user.username != current_user.username %}
+    <h4> {{ user.username }}'s Followers</h4>
+{% else %}
+    <h4> Your Followers</h4>
+{% endif %}
+
+
+<table class="table" id="followers-table" width="100%" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for follower in followers %}
+    <tr>
+      <td>{{ follower.username }}</td>
+      <td>
+        <a class="btn btn-default btn-sm" href="{{url_for('profile', username=follower.username)}}"> <span class="glyphicon glyphicon-info-sign"> </span></a>
       </td>
     </tr>
     {% endfor %}
