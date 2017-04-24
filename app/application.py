@@ -111,6 +111,35 @@ def profile(username):
                            current_user=current_user,
                            playlists=list(playlists))
 
+@app.route('/profile/<username>/connections')
+@login_required
+def connections(username):
+    if username is None:
+        flash('User %s not found.' % username)
+        return redirect(url_for('index'))
+    profile_user = db_utils.user_from_username(engine, username)
+    followings = db_utils.get_user_followers(engine, profile_user.id)
+    if(followings == None):
+        followings = []
+
+    followers = db_utils.get_user_followings(engine, profile_user.id)
+    if (followers == None):
+        followers = []
+
+    return render_template('connections.html',
+                           user=profile_user,
+                           followings=list(followings),
+                           followers=list(followers))
+
+@app.route('/user_follow', methods=['POST'])
+@login_required
+def user_follow():
+    data = request.json
+    user_id = data['id']
+
+    db_utils.create_follower(engine, current_user.id, user_id)
+    return jsonify("Followed successfully")
+
 
 @app.route('/playlist/<playlist_id>')
 @login_required
@@ -334,7 +363,6 @@ def playlist_remove():
 
     db_utils.remove_playlist_from_user(engine, user_id, playlist_id)
     return jsonify("Removed successfully")
-
 
 @app.route('/playlist/edit', methods=['PUT'])
 @login_required

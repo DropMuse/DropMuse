@@ -83,6 +83,35 @@ def search_songs(engine, query, limit=100, offset=0):
         return results_count, list(results)
 
 
+def create_follower(engine, follower, user_followed):
+    sql = text('INSERT INTO following(user_id, following_id) '
+               'VALUES (:follower, :user_followed) '
+               'ON DUPLICATE KEY UPDATE user_id=user_id',
+               autocommit=True)
+    with engine.connect() as con:
+        con.execute(sql,
+                    follower=follower,
+                    user_followed=user_followed)
+
+def get_user_followers(engine, user_id):
+    sql = text('SELECT * '
+               'FROM users '
+               'LEFT JOIN following '
+               'ON users.id=following.following_id '
+               'WHERE following.user_id=:user_id')
+    with engine.connect() as con:
+        return con.execute(sql, user_id=user_id)
+
+def get_user_followings(engine, user_id):
+    sql = text('SELECT * '
+               'FROM users '
+               'LEFT JOIN following '
+               'ON users.id=following.user_id '
+               'WHERE following.following_id=:user_id')
+    with engine.connect() as con:
+        return con.execute(sql, user_id=user_id)
+
+
 def search_users(engine, query):
     query = '%{}%'.format(query.lower())
     sql = text('SELECT * '
@@ -113,7 +142,6 @@ def user_playlists(engine, username):
                                       count=p['COUNT(songs.id)'],
                                       duration=p['SUM(duration)']))
         return playlists
-
 
 def add_song_to_playlist(engine, song_id, playlist_id):
     ''' Adds song to the given playlist '''
