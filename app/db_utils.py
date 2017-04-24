@@ -391,10 +391,10 @@ def song_lyrics(engine):
         return con.execute(sql).fetchall()
 
 
-def delete_all_keywords(engine):
-    sql = text('DELETE FROM keywords;', autocommit=True)
+def delete_song_keywords(engine, song_id):
+    sql = text('DELETE FROM keywords WHERE song_id=:song_id;', autocommit=True)
     with engine.connect() as con:
-        con.execute(sql)
+        con.execute(sql, song_id=song_id)
 
 
 def all_keywords(engine):

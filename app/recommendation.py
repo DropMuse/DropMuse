@@ -217,16 +217,16 @@ def extract_keywords(engine):
 
     print "Calculated TFIDF for all songs."
 
-    # Flush old keywords
-    db_utils.delete_all_keywords(engine)
-    print "Flushed old keywords"
-
     # Do insertion for keywords of all songs
     for i in range(len(songs)):
         print "Inserting keywords ({}/{})".format(i, len(songs))
         # Sort tfidf score descending, find 10 most relevant words
         max_indices = (-tfidf.getrow(i).toarray()[0]).argsort()[:10]
         song_id = songs[i].id
+
+        # Delete old keywords
+        db_utils.delete_song_keywords(engine, song_id)
+
         for term_idx in max_indices:
             if tfidf[i, term_idx] == 0:
                 continue
